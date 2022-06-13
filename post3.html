@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go interface</title>
+    
+<style>
+a {
+      font-size: 25px;
+    }
+p{
+    font-size: 25px;
+    padding-bottom: 20px;
+}
+div{
+    padding-left: 70px;
+    width: 55%;
+}
+h1 {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+</style>
+</head>
+
+<body>
+<div>
+    <h1>Go interface</h1>
+     <p>There are couple hard things in Go, concurrence, type embedding, and interface.</p>
+    
+     <p> Interface is heavily used in any Go program, the implementation of net package is no exception. So what is interface in Go. First we have make it clear what is an interface type and interface value. A interface type defined what behaviors (functions) a type who implement the interface will have. A interface value is a container that store 2 things, a concrete type and its value, because an interface value can be assigned any value of any type that implement the interface, the type and value store in the interface value are called dynamic value and dynamic type. To access the value and type in an interface value, we use type assertion type switch. So how is it possible for an interface value to store arbitrary data type, well it use a pointer to the dynamic value. What about the dynamic type, what represent a specific type in Go, well type is a compiling concept so it only use in compile time, the data that describe an type is called type descriptor, there are more implement detail than this but basically, it is possible for an interface value to see why type it currently have by using the type descriptor. In a way, this is similar to virtual function in C++, in which the type of an object decide which function is called, the idea is the same with interface value in Go in which the dynamic type decide which function is called.</p>
+
+     <p>Interface can be use as a way to implement duck typing or a more academic term is substitutability, in which any type that has necessary method can be substitute for each other. Interface can be use as a design method in which behavior of different type is grouped together. And before Go has generic, interface allow generic with empty interface, empty interface is even more powerful than generic, but abusing empty interface create unsafe code.</p>
+
+     <p>There are many gotcha when using interface, for example, if a type has pointer receiver, then its value type don't have the type. It is like this, *T has the method but T does not. *T and T is completely different type. However, if a type has value receiver, then its pointer type also has the method. The reason is because Go implicit dereference pointer type when accessing method. so x.f() in which x is *T is equal to (*x).f(), but *x is x and x has method f(), that is why *T has method f(). Interface allow only function that appear in interface type to be called, so even if the dynamic type has method, it still not invoke, this is kinda like info hiding. Finally an interface is nil if its dynamic type is nil, so there can be error if an interface value store an nil dynamic value it is not nil interface, and invoke method on nil value may cause error. Checking if interface == nil is not guarantee. For example, we have an i I interface, store a value of type T that has nil value, then the interface I is not nil, but if we have var i Interface, then i is nil.</p>
+     <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+</div>
+</body>
+</html>

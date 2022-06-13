@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linker and linking process.</title>
+    
+<style>
+a {
+      font-size: 25px;
+    }
+p{
+    font-size: 25px;
+    padding-bottom: 20px;
+}
+div{
+    padding-left: 70px;
+    width: 55%;
+}
+h1 {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+</style>
+</head>
+
+<body>
+<div>
+    
+
+<h1>Linker and linking process.</h1>
+<p>
+*Fix: object file is not assembly code file, it is machine code file with header entries, the address field of instructions that need to be resolved are all 0.
+
+How can code from one file knows data from other files to combine into 1 single program, and where are those library function code comes from? One can understands the compiling process that turn a source code file into machine executable instruction, but what happen when there are more than 1 file to compile, which is the case most of the time? Well that is the job of the linker, a program that input is object files and output is executable file. Here is an overview of a compiling process. The source code first go through pre-compiler to remove comment and put in appropriate code for header files, then go through the compiler to turn into assembly code, the assembly files then go through assembler to turn into object code, the object code is basically assembly code with header file, each header file state what the file is export and need to import, then the linker will use the header in these file to link them together by link it basically mean resolving appropriate address, the rest is the OS jobs to load the file into memory and execute them.
+</p>
+
+<h2>1. Why link?</h2>
+<p>
+To understand linker one first need to understand why one is needed. If all the source code is stay in one single source file, then there will no need for a linker, but for obvious reason, put all the source code in one single file is not a good idea. So we need to divide the source code into multiple source files, but then we have a serious problem with inconsistent addresses, all the addresses that needed for instruction become undeterminable, linker will solve this address issue.
+</p>
+
+
+<h2>2. Linker input.</h2>
+<p>
+It's important to know what is the input of linker to know how linker work. The input of linker is object files, which are basically binary file with header entries that state which instruction is referencing an external reference. For example if in one object file there is an instruction that has address field which is an address of another instruction/data in another file. The assembler can't resolve the correct address for this instruction, but it can tell the linker that "Hey, this instruction is referencing an external reference that need to be resolved, and by the way, here is the address (relative to the first instruction of the file) of an instruction/data that this file is exporting.". But before that, how can the assembler know which instruction is referencing external label or which label is this file exporting? Well, in the assembly file that generate by the compiler, the compiler will put appropriate .extern and .global directives for appropriate label. How can the assembler tells linker these information? The assembler create header which consist of header entries that states if which address need to resolve and which address need export. Because there are many instructions that have different amount of address bits, there are different header entries for each type of instructions. For example, the assembler will create header entry in one of its output object file like this "E 0001 i" is an header entry that say "in this machine code file, at address 0001, there is an instruction type E that referencing an external label i" or "G 0005 i" which say "in this machine code file, at address 0005, there is an instruction/data that can be referenced, the label of this is i". So, in one simple sentence the linker take in machine code files that say what it exporting and importing, by give linker the information about the type of instruction, and address relative to the beginning of file, and the label its referencing, so 3 things.
+
+What about local reference? what is local reference? Let say in an assembly file, there are instructions like
+
+x:             .word    y        // the value at this address is address of y label.
+
+y:             .word    5
+
+. The value of x, even though, not referencing an external label, is referencing a local label. The address of this local label y, however, can not be determined because it's not relative to the beginning of this file, but relative to the beginning of the final machine code file, and this address is not determined before linking, because this address can be closer or further. Therefor the final address of y need to be resolved for the instruction x to work, so there is an A entries which provide the address of 16 bits local references for instruction at address of label x, 
+
+A 0005           // 0005 is address of instruction relative to this machine code file which is at label x.
+
+While the assembler put 0 to address field of instruction that reference external label, the assembler also need to adjust address of any .word directive that specify a label operand rather than a constant, but instead of put in 0, the assembler assembles this .word directive (x) to the address of y relative to the beginning of the module contain these .word. In the final machine code array the final address of y will be calculated by adding the address of the beginning of the file that contain these .word in the final machine instruction array to the content at the address of x, Ex if the address of beginning of file is 0006 and the content at x at address 0012 is 001e then after adding 0006 to 0012 will give the final address of y in the machine code array.
+
+So object files are machine code files that have header which consist of header entries. In the LCC, the o entry signal this file is machine code file, S signal start-up code address, G provide address of global label, E provide address of instruction that has 11-bits address field and external reference label, e is 9-bits, V is 16 bits, A is 16 bits local, C separate header with machine code.
+</p>
+
+
+<h2>3. The 4 step linking process.<h2>
+<p>
+Ultimately the linker want 1 single machine instruction file, but it has multiple object files with address need to be resolved. There are 8 types of header entries, o, S, E, e, V, A, G, C, so the linker will has 8 tables for each type of entry. The linker will put all instructions of all the object files, by append file after file to have 1 single array contain all the instructions of all object files, this array is called machine code array. The linker then put into the table the label and the final address of the label, the address that relative to the beginning of the machine code array. To do this, the linker first have the starting address of each module in the machine code array, and it also have the relative address of each label entry to the original module that contain the label, so to get the final address of each label we just need to add the starting address of each module to the relative address of each label relative to the origin address. One addition for the A entries, the linker also record the starting address of the module that has A entry. So after this step, we have the machine code array, and 8 tables for each type header, in each table contain the label and the final address of that label.
+
+Step 2 handle E, e, V
+
+To resolve instruction in tables E, e, V, that is, instructions that has pc-relative offset address set to 0 by the assembler because it could not find external reference outside one file, we will do exactly like what an assembler do to get pc-relative address of a label in one file. That is use the address of the label (which we have in the G table) minus (-) the address of the instruction that referencing that label (this we have in the E, e, V table) plus (+) 1 because when the instruction that reference the label is executed, the pc is incremented by one, we need to subtract this value by 1 or else the pc-offset will be 1 over the correct effective address. This is the same way assembler get pc-offset to a label in one file. Here is an overview of how assembler work. First it prepare 3 tables, 2 of which can be build right into memory which are opcode table and resister table, the opcode table map the assembly label to it corresponding machine code bits, same for register table which map label to bits that indicate which register. The third table which is the label table, map the label with the effective address of that label in the file. To do this the assembler initialize a int location_counter to 0, the first instruction will have address 0, and before it read the next instruction, the assembler increase the counter by 1, unless there is directive that indicate other wise, Ex .zero 5 which will make the assembler increase the location counter by 5. This is the first pass, after this we have a label table that have the label and its corresponding effective address. The second part the assembler assembles, that is turn assembly instruction and label in to machine code, the opcode will match with its code in opcode table, register in register table, once it read in instruction that has pc-relative address to resolve, it read in the label in the instruction, find its in the label table then calculate the pc-relative offset for the instruction. How, the same way as before, use the effective address of the label - (minus) effective address of instruction (which is the current value of location_counter) + 1. After this we will have an offset to add to the value of pc-offset of the instruction. Why add but not just replace? Well because the pc-offset field that need to be changed is not always zero.
+
+***Note: The label in assembly code, can have something call label offset, Ex: label x can be written x+1, x-2, etc. The assembler when assemble this instruction to create object file will not zero out the address field, but the address field will have the value of offset, incase of x+1 the pc-offset field will be 1 not 0. So if we replace this pc-offset field we lost the offset, that why we add the computed pc-relative offset to the pc-offset address field, not replace it.
+
+ So, now the have the correct pc-relative offset, we need to change the pc-relative address of the instruction with external reference to the correct offset to that reference in the machine code array. Because there is limited number of bits in the pc-offset field, Ex: e entry instruction has only 9 bits field for offset, the range of offset is limited, Ex: 1 bit for sign, 8 bit for number, 2^8 = 256, so the range is +_ 256. So after calculate the number of offset, only 9 bits from the LSB is add into pc-relative address filed of instruction.
+
+For V entries it's simple because it's 16 bit effective address, so we just need to add the location of external reference in G to the content at V entry. 
+
+Step 3 handle A entries. A entry is local reference, this local reference's effective address use to be fix when it relative to the beginning of the file it stay in, but after linking process, its effective address is relative to the beginning of machine code array, which can not be determined by the assembler before linking. Remember that the assembler does not 0 out value at instruction that reference local reference, it still put the old value of this instruction which is the offset relative to start of file, this value just need adjustment, we need to add this the range from the start of this file to the start of machine code array so that we can have the effective address of this local reference, hence why we save the address of beginning of file in the A table along with the address of the instruction referencing the local reference.
+
+Step 4 output the executable file. The E, e, will get resolve so they are gone, V entries become A entries because all the external reference become local reference, G global table stay. They stay in header, the rest of file is executable machine code.
+
+*Question: what if an instruction that have to point to an address outside it's pc-relative address range? Ans: it will point to a temporary value near it, this temporary value will store the full address of the final value which can be any where in its memory.
+</p>
+<h2>4. Separate compile C modules</h2>
+<p>
+How can a file use other file's value? They do this by using the header in its object file. The header will provide information for the linker to see which file provide which variables and which file need which value. There are different type of header for different type of values, for example, a object file can have a header value 'S' which tell the linker that it is the start of the program.
+</p>
+
+<br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+</div>
+</body>
+</html>
