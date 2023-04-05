@@ -1,0 +1,48 @@
+body {
+    font-family: Arial, serif;
+    background-color: #f0f0f0;
+}
+
+div.content {
+    max-width: 900px;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    margin: 0 auto;
+}
+
+h1 {
+    font-weight: 300;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    padding: 0;
+    margin: 30px 0;
+    font-size: larger;
+}
+
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+a:visited {
+    color: blue;
+}
+
+p.date {
+    font-weight: 100;
+    font-size: 14px;
+}
+  
+div.footer {
+    margin-top: 20px;
+    margin-bottom: 150px;
+}

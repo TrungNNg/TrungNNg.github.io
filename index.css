@@ -1,0 +1,36 @@
+body {
+    font-family: Arial, serif;
+    background-color: #f0f0f0;
+}
+
+image {
+    margin-left: 20px;
+}
+
+div.content {
+    max-width: 900px;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    margin: 0 auto;
+}
+
+div.profile {
+    display: flex;
+}
+
+div.info {
+    margin-left: 20px;
+}
+
+a {
+    text-decoration: none;
+}
+
+a:visited {
+    color: blue;
+}
+
+div.footer {
+    margin-top: 20px;
+    margin-bottom: 150px;
+}

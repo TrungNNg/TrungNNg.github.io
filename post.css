@@ -1,0 +1,51 @@
+body {
+    font-family: Arial, serif;
+    background-color: #f0f0f0;
+    font-size: 17px;
+}
+
+div.content {
+    max-width: 900px;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    margin: 0 auto;
+}
+
+p.date {
+    color: grey
+}
+
+h2 {
+    font-weight:lighter;
+}
+
+blockquote {
+    border-left: 4px solid #ccc;
+    margin: 1em 0;
+    padding: 0 1em;
+    quotes: "\201C""\201D""\2018""\2019";
+}
+  
+blockquote p:before {
+    content: open-quote;
+}
+  
+blockquote p:after {
+    content: close-quote;
+}
+
+code {
+    display: block;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+}
+
+a:visited {
+    color: blue;
+}
+
+div.footer {
+    margin-top: 20px;
+    margin-bottom: 150px;
+}
