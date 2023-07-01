@@ -36,7 +36,6 @@ blockquote p:after {
 
 code {
     display: block;
-    padding: 10px;
     border: 1px solid #ccc;
     background-color: #f9f9f9;
 }
