@@ -1,5 +1,5 @@
 body {
-    font-family: Arial, serif;
+    font-family: Helvetica, sans-serif, serif;
     background-color: #f0f0f0;
     font-size: 17px;
 }
@@ -13,6 +13,16 @@ div.content {
 
 p.date {
     color: grey
+}
+
+p {
+    margin: 0;
+    margin-bottom: 10px;
+}
+
+pre {
+    margin: 0;
+    padding: 0;
 }
 
 h2 {

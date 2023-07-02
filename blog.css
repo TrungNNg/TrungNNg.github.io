@@ -1,5 +1,5 @@
 body {
-    font-family: Arial, serif;
+    font-family: Helvetica, sans-serif, serif;
     background-color: #f0f0f0;
 }
 
@@ -21,7 +21,7 @@ ul {
 
 li {
     padding: 0;
-    margin: 30px 0;
+    margin: 10px 0;
     font-size: larger;
 }
 
