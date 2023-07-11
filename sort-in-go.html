@@ -19,8 +19,7 @@
     <br>
     <br>
     <p>Sorting in Go seem rather confusing at first, for example, below are 4 different ways to sort a slice of ints in Go. </p>
-    <pre>
-        <code class="language-go">arr := []int{1,4,3,2,5}
+    <pre><code class="language-go">arr := []int{1,4,3,2,5}
 
 sort.Ints(arr)  // method 1
 
@@ -32,43 +31,37 @@ sort.Slice(arr, func (i, j int) bool {   // method 4
     return arr[i] < arr[j]
 })
 
-fmt.Println(arr) // [1 2 3 4 5]</code>
-    </pre>
-    <p>Sorting in Go, however, involves only two key components: the <a href="https://pkg.go.dev/sort#Sort">sort.Sort()</a> function and the <a href="https://pkg.go.dev/sort#Interface">sort.Interface</a>.</p>
+fmt.Println(arr) // [1 2 3 4 5]</code></pre>
+    <p style="padding-top: 10px;">Sorting in Go, however, involves only two key components: the <a href="https://pkg.go.dev/sort#Sort">sort.Sort()</a> function and the <a href="https://pkg.go.dev/sort#Interface">sort.Interface</a>.</p>
     <p>The sort.Interface has 3 methods to implement:
-    <pre>
-        <code class="language-go">type Interface interface {
+    <pre><code class="language-go">type Interface interface {
     Len() int
     Less(i, j int) bool
     Swap(i, j int)}</code></pre></p>
     <p>While the sort.Sort() has a quick sort implementation for any type that implement the sort.Interface. <a href="https://cs.opensource.google/go/go/+/refs/tags/go1.20.5:src/sort/sort.go;l=42">Source</a>
-    <pre>
-        <code class="language-go">func Sort(data Interface) {
+        
+    <pre><code class="language-go">func Sort(data Interface) {
     n := data.Len()
     if n <= 1 {
         return
     }
     limit := bits.Len(uint(n))
     pdqsort(data, 0, n, limit)
-}</code>
-    </pre></p>
+}</code></pre></p>
     <p>If you have a slice that you want to sort, that <strong>slice</strong> need to implement the sort.Interface.</p>
     <p>This apply even for basic type like integer, there is no sorting implementation for a slice of int in the standard library even though sorting slice of ints is an extremely common operation.</p>
     <p>In order to sort a slice of int, we need to make the []int type implement the sort.Interface protocol. The way to do this is to create a type alias for []int, let call this type IntSlice, IntSlice will implement the sort.Interface.
-<pre>
-    <code class="language-go">type IntSlice []int
+<pre><code class="language-go">type IntSlice []int
 
 func (x IntSlice) Len() int           { return len(x) }
 func (x IntSlice) Less(i, j int) bool { return x[i] < x[j] }
 func (x IntSlice) Swap(i, j int)      { x[i], x[j] = x[j], x[i] }</code></pre></p>
     <p>Now, to sort the original slice of int ([]int) type, we convert it to IntSlice then passed to sort.Sort().
-        <pre>
-            <code class="language-go">arr := []int{1,4,3,2,5}
+        <pre><code class="language-go">arr := []int{1,4,3,2,5}
 sort.Sort(IntSlice(arr))
 fmt.Print(arr) // [1 2 3 4 5]</code></pre></p>
 <p>This is basically how Go implement convinient functions for sorting operation.
-    <pre>
-        <code class="language-go">// The Ints() will convert arr into sort.IntSlice then call sort.Sort()
+    <pre><code class="language-go">// The Ints() will convert arr into sort.IntSlice then call sort.Sort()
 sort.Ints(arr)
 
 // Convert arr into sort.IntSlice type which have the Sort() method which call sort.Sort()
@@ -81,13 +74,14 @@ sort.Sort(sort.IntSlice(arr))
 // we can use this for other type like float, byte, or custom type.
 sort.Slice(arr, func (i, j int) bool {   // method 4
     return arr[i] < arr[j]
-})</code>
-    </pre>
+})</code></pre>
 </p>
-
     <hr>
-    <h2>Related Links</h2>
-  
+    <h2>References</h2>
+    <ul>
+        <li><a href="https://yourbasic.org/golang/how-to-sort-in-go/">yourbasic.org</a></li>
+        <li><a href="https://cs.opensource.google/go/go/+/refs/tags/go1.20.5:src/sort/sort.go">sort.go</a></li>
+    </ul>
     <hr>
     <div class="footer"></div>
 </div>

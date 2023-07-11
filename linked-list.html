@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linked List</title>
+    <link rel="stylesheet" href="post.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-light.min.css">
+</head>
+<body>
+<div class="content">
+    <div class="nav"><a href="blog.html">Back</a></div>
+    <hr>
+    <h1>Linked List</h1>
+    <!---<p class="date">Feb 2, 2023</p>-->
+    <img src="images/link-list.png" alt="singly link list" style="padding-bottom: 30px;">
+
+    <p>A linked list is a collection of data in which each piece of data is stored in a structure called "node". These nodes connect together in linear order using "link" which is a pointer to the next node. 
+        Under the simplest form, each node is composed of data and a link to the next node in the sequence. This structure allows for efficient insertion or removal of elements from any position in the sequence 
+        during iteration. More complex variants add additional links, allowing efficient insertion or removal from arbitrary element references. A drawback of linked lists is that access time is linear (and difficult to pipeline). Faster access, 
+        such as random access, is not feasible. Arrays have better cache locality as compared to linked lists.
+    </p>
+    <pre>
+        <code class="language-go">type LinkedList struct {
+    Head *Node
+}        
+
+type Node struct {
+    Val int
+    Next *Node
+}</code></pre>
+
+    <h2>Add element | O(n)</h2>
+    <pre><code class="language-go">func (l *LinkedList) Add(val int) {
+    new_node := Node{Val: val, Next: nil}
+    if l.Head == nil {
+        l.Head = &new_node
+        return
+    }
+    curr := l.Head
+    for curr.Next != nil {
+        curr = curr.Next
+    }
+    curr.Next = &new_node
+}</code></pre>
+
+<h2>Remove all appearance | O(n)</h2>
+    <pre><code class="language-go">func (l *LinkedList) RemoveAll(val int) {
+    dummy_node := Node{Val:0, Next: l.Head}
+    curr,prev := l.Head, &dummy_node
+    for curr != nil {
+        if curr.Val == val {
+            prev.Next = curr.Next
+        } else {
+            prev = curr
+        }
+        curr = curr.Next
+    }
+    l.Head = dummy_node.Next
+}</code></pre>
+
+<h2>Find middle element | O(n)</h2>
+    <pre><code class="language-go">// if list is even (2 middle elements), return right node
+func (l *LinkedList) FindMiddleNode() *Node {
+    f, s := l.Head, l.Head
+    for f != nil && f.Next != nil {
+        s = s.Next
+        f = f.Next.Next
+    }
+    return s
+}</code></pre>
+
+<h2>Reverse list | O(n)</h2>
+    <pre><code class="language-go">// reverse iterative
+func (l *LinkedList) ReverseIterative() {
+    var prev *Node
+    curr := l.Head
+    for curr != nil {
+        next := curr.Next
+        curr.Next = prev
+        prev = curr
+        curr = next
+    }
+    l.Head = prev
+}
+
+// reverse recursive
+func (l *LinkedList) ReverseRecursive(n *Node) {
+    if l.Head == nil { return }
+    if n.Next == nil {
+        l.Head = n
+        return
+    }
+    l.ReverseRecursive(n.Next)
+    n.Next.Next = n
+    n.Next = nil
+}</code></pre>
+<hr>
+    <h2>References</h2>
+    <ul>
+        <li><a href="https://en.wikipedia.org/wiki/Linked_list">Wikipedia</a></li>
+        <li><a href="https://www.youtube.com/@mycodeschool">mycodeschool on Youtube</a></li>
+    </ul>
+    <hr>
+    <div class="footer"></div>
+</div>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>hljs.highlightAll()</script>
+</body>
+</html>
