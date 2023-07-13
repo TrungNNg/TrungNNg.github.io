@@ -7,17 +7,13 @@ var p = fmt.Println
 func main() {
     
     bst := BST{}
-    root := bst.Insert(5)
-    a := bst.Insert(2)
-    b := bst.Insert(6)
-    c := bst.Insert(3)
-    d := bst.Insert(1)
+    bst.Insert(5)
+    bst.Insert(2)
+    bst.Insert(6)
+    bst.Insert(3)
+    bst.Insert(1)
 
-    p(root,a,b,c,d)
-
-    bst.Root = bst.Remove(bst.Root, 3)
-
-    p(root,a,b,c,d)
+    bst.BFS()
 
 }
 
@@ -32,27 +28,25 @@ type Node struct {
 }
 
 // INSERT
-func (tree *BST) Insert(val int) *Node {
+func (tree *BST) Insert(val int) {
+    /*
     if tree.Root == nil {
         tree.Root = &Node{Val: val}
         return tree.Root
     }
-    return insert(tree.Root, val)
+    return insert(tree.Root, val)*/
+    tree.Root = insert(tree.Root, val)
 }
 
 func insert(root *Node, val int) *Node {
-    if root.Val <= val {
-        if root.Left == nil {
-            root.Left = &Node{Val:val}
-            return root.Left
-        }
-        return insert(root.Left, val)
+    if root == nil {
+        return &Node{Val:val}
+    } else if val <= root.Val {
+        root.Left = insert(root.Left, val)
+    } else {
+        root.Right = insert(root.Right, val)
     }
-    if root.Right == nil {
-        root.Right = &Node{Val:val}
-        return root.Right
-    }
-    return insert(root.Right, val)
+    return root
 }
 
 // SEARCH
@@ -67,21 +61,24 @@ func search(root *Node, val int) *Node {
     if root.Val == val {
         return root
     } else if root.Val < val {
-        return search(root.Left, val)
-    } else {
         return search(root.Right, val)
-    }
+    } 
+    return search(root.Left, val)    
 }
 
 // REMOVE
-func (tree *BST) Remove(root *Node, val int) *Node {
+func (tree *BST) Remove(val int) {
+    tree.Root = remove(tree.Root, val)
+}
+
+func remove(root *Node, val int) *Node {
     if root == nil {
         return nil
     }
     if val < root.Val {
-        root.Left = tree.Remove(root.Left, val)
+        root.Left = remove(root.Left, val)
     } else if val > root.Val {
-        root.Right = tree.Remove(root.Right, val)
+        root.Right = remove(root.Right, val)
     } else {
         if root.Left == nil && root.Right == nil {
             return nil
@@ -93,7 +90,7 @@ func (tree *BST) Remove(root *Node, val int) *Node {
             // target node has both left and right subtree
             min_node := find_min(root.Right)
             root.Val = min_node.Val
-            root.Right = tree.Remove(root.Right, min_node.Val)
+            root.Right = remove(root.Right, min_node.Val)
         }
     }
     return root
@@ -134,11 +131,9 @@ func (tree *BST) Depth(val int) int {
 func depth(n *Node, val int) int {
     if n == nil {
         return -1
-    } 
-    if n.Val == val {
+    } else if n.Val == val {
         return 0
-    }
-    if n.Val < val {
+    } else if n.Val < val {
         return depth(n.Left, val) + 1
     }
     return depth(n.Right, val) + 1
