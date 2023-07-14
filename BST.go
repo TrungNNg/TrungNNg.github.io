@@ -13,7 +13,9 @@ func main() {
     bst.Insert(3)
     bst.Insert(1)
 
-    bst.BFS()
+//    bst.BFS()
+
+    p(bst.Depth(3))
 
 }
 
@@ -29,12 +31,6 @@ type Node struct {
 
 // INSERT
 func (tree *BST) Insert(val int) {
-    /*
-    if tree.Root == nil {
-        tree.Root = &Node{Val: val}
-        return tree.Root
-    }
-    return insert(tree.Root, val)*/
     tree.Root = insert(tree.Root, val)
 }
 
@@ -112,20 +108,28 @@ func (tree *BST) Height(val int) int {
     return height(node)
 }
 
-func height(n *Node) int {
-    if n == nil {
+func height(root *Node) int {
+    if root == nil {
         return -1
     }
-    return max(height(n.Left), height(n.Right)) + 1
+    return max(height(root.Left), height(root.Right)) + 1
 }
 
 // DEPTH
 func (tree *BST) Depth(val int) int {
-    node := tree.Search(val)
-    if node == nil {
-        return -1     // no node with given value
+    depth := 0
+    curr := tree.Root
+    for curr != nil {
+        if val < curr.Val {
+            curr = curr.Left
+        } else if val > curr.Val {
+            curr = curr.Right
+        } else if val == curr.Val {
+            return depth
+        }
+        depth += 1
     }
-    return depth(tree.Root, val)
+    return -1
 }
 
 func depth(n *Node, val int) int {

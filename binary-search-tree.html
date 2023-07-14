@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binary Search Tree</title>
+    <link rel="stylesheet" href="post.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-light.min.css">
+</head>
+<body>
+<div class="content">
+    <div class="nav"><a href="blog.html">Back</a></div>
+    <hr>
+    <h1>Binary Search Tree</h1>
+    <!---<p class="date">Feb 2, 2023</p>-->
+    <img src="images/BST.png" alt="binary search tree" style="width:300px;height:250px;">
+
+    <p style="padding-top: 20px;">
+        Binary search trees keep their keys in sorted order, so that lookup and other operations can use the principle of binary search: when looking for a key in a tree (or a place to insert a new key), they traverse the tree from root to leaf, 
+        making comparisons to keys stored in the nodes of the tree and deciding, on the basis of the comparison, to continue searching in the left or right subtrees. On average, this means that each comparison allows the operations to skip about 
+        half of the tree, so that each lookup, insertion or deletion takes time proportional to the logarithm of the number of items stored in the tree.
+        </p>
+        <p></p>
+    <pre>
+        <code class="language-go">type BST struct {
+    Root *Node    
+}
+        
+type Node struct {
+    Val int
+    Left *Node
+    Right *Node
+}</code></pre>
+
+    <h2>Add element | O(log<sub>2</sub>n) </h2>
+    <pre><code class="language-go">func (tree *BST) Insert(val int) {
+    tree.Root = insert(tree.Root, val)
+}
+
+func insert(root *Node, val int) *Node {
+    if root == nil {
+        return &Node{Val:val}
+    } else if val <= root.Val {
+        root.Left = insert(root.Left, val)
+    } else {
+        root.Right = insert(root.Right, val)
+    }
+    return root
+}</code></pre>
+
+<h2>Search element | O(log<sub>2</sub>n)</h2>
+    <pre><code class="language-go">func (tree *BST) Search(val int) *Node {
+    return search(tree.Root, val)
+}
+
+func search(root *Node, val int) *Node {
+    if root == nil {
+        return nil
+    }
+    if root.Val == val {
+        return root
+    } else if root.Val < val {
+        return search(root.Right, val)
+    } 
+    return search(root.Left, val)    
+}</code></pre>
+
+<h2>Remove element | O(log<sub>2</sub>n)</h2>
+<p>There are 3 different cases to handle when remove an elements.
+<p>Case 1: If the target node has 0 child then just remove target node.</p>
+<p>Case 2: If the target node has only left child or only right child. If has left child return pointer to left child, if has right child then return pointer to right child.</p>
+<p>Case 3: If the target node has both left and right child then replace target node with minimum node from right subtree then remove the minimum node from right subtree. This work 
+because (A) the minimum node will not have any left child, (B) left subtree of target node is smaller than the minimum node, and (C) all other nodes in right subtree is larger than the minimum node.
+So after replacement we just need to remove the duplicated minimum node.</p>
+<p></p>
+    <pre><code class="language-go">func (tree *BST) Remove(val int) {
+    tree.Root = remove(tree.Root, val)
+}
+
+func remove(root *Node, val int) *Node {
+    if root == nil {
+        return nil
+    }
+    if val < root.Val {
+        root.Left = remove(root.Left, val)
+    } else if val > root.Val {
+        root.Right = remove(root.Right, val)
+    } else {
+        if root.Left == nil && root.Right == nil {
+            return nil
+        } else if root.Left != nil {
+            return root.Right
+        } else if root.Right != nil {
+            return root.Left
+        } else {
+            // target node has both left and right subtree
+            min_node := find_min(root.Right)
+            root.Val = min_node.Val
+            root.Right = remove(root.Right, min_node.Val)
+        }
+    }
+    return root
+}
+
+func find_min(n *Node) *Node {
+    if n.Left != nil {
+        return find_min(n.Left)
+    }
+    return n
+}</code></pre>
+
+<h2>Height of node | O(log<sub>2</sub>n)</h2>
+<p>Height of a node is the longest path from the node to any of its leafs.</p>
+    <pre><code class="language-go">func (tree *BST) Height(val int) int {
+    node := tree.Search(val)
+    if node == nil {
+        return -1     // no node with given value
+    }
+    return height(node)
+}
+
+func height(n *Node) int {
+    if n == nil {
+        return -1
+    }
+    return max(height(n.Left), height(n.Right)) + 1
+}</code></pre>
+
+<h2>Depth of node | O(log<sub>2</sub>n)</h2>
+<p>Height of a node is the longest path from the node to any of its leafs.</p>
+    <pre><code class="language-go">func (tree *BST) Height(val int) int {
+    node := tree.Search(val)
+    if node == nil {
+        return -1     // no node with given value
+    }
+    return height(node)
+}
+
+func height(n *Node) int {
+    if n == nil {
+        return -1
+    }
+    return max(height(n.Left), height(n.Right)) + 1
+}</code></pre>
+
+
+
+
+<hr>
+    <h2>References</h2>
+    <ul>
+        <li><a href="https://en.wikipedia.org/wiki/Linked_list">Wikipedia</a></li>
+        <li><a href="https://www.youtube.com/@mycodeschool">mycodeschool on Youtube</a></li>
+    </ul>
+    <hr>
+    <div class="footer"></div>
+</div>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>hljs.highlightAll()</script>
+</body>
+</html>
