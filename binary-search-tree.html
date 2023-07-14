@@ -110,7 +110,7 @@ func find_min(n *Node) *Node {
 }</code></pre>
 
 <h2>Height of node | O(log<sub>2</sub>n)</h2>
-<p>Height of a node is the longest path from the node to any of its leafs.</p>
+<p>Height of a node is the largest number of links from the node to any of its leafs.</p>
     <pre><code class="language-go">func (tree *BST) Height(val int) int {
     node := tree.Search(val)
     if node == nil {
@@ -119,37 +119,53 @@ func find_min(n *Node) *Node {
     return height(node)
 }
 
-func height(n *Node) int {
-    if n == nil {
+func height(root *Node) int {
+    if root == nil {
         return -1
     }
-    return max(height(n.Left), height(n.Right)) + 1
+    return max(height(root.Left), height(root.Right)) + 1
 }</code></pre>
 
 <h2>Depth of node | O(log<sub>2</sub>n)</h2>
-<p>Height of a node is the longest path from the node to any of its leafs.</p>
-    <pre><code class="language-go">func (tree *BST) Height(val int) int {
-    node := tree.Search(val)
-    if node == nil {
-        return -1     // no node with given value
+<p>Depth of a node is the number of links from the root to the node.</p>
+    <pre><code class="language-go">func (tree *BST) Depth(val int) int {
+    depth := 0
+    curr := tree.Root
+    for curr != nil {
+        if val < curr.Val {
+            curr = curr.Left
+        } else if val > curr.Val {
+            curr = curr.Right
+        } else if val == curr.Val {
+            return depth
+        }
+        depth += 1
     }
-    return height(node)
-}
-
-func height(n *Node) int {
-    if n == nil {
-        return -1
-    }
-    return max(height(n.Left), height(n.Right)) + 1
+    return -1
 }</code></pre>
 
-
+<h2>BSF traverse | O(n)</h2>
+    <pre><code class="language-go">func (tree *BST) BFS() {
+    if tree.Root == nil { return }
+    queue := []*Node{tree.Root}
+    for len(queue) != 0 {
+        curr := queue[0]
+        queue = queue[1:]
+        p(curr.Val)
+        if curr.Left != nil {
+            queue = append(queue, curr.Left)
+        }
+        if curr.Right != nil {
+            queue = append(queue, curr.Right)
+        }
+    }
+}</code></pre>
 
 
 <hr>
     <h2>References</h2>
     <ul>
-        <li><a href="https://en.wikipedia.org/wiki/Linked_list">Wikipedia</a></li>
+        <li><a href="https://en.wikipedia.org/wiki/Binary_search_tree">Wikipedia</a></li>
         <li><a href="https://www.youtube.com/@mycodeschool">mycodeschool on Youtube</a></li>
     </ul>
     <hr>

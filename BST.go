@@ -132,17 +132,6 @@ func (tree *BST) Depth(val int) int {
     return -1
 }
 
-func depth(n *Node, val int) int {
-    if n == nil {
-        return -1
-    } else if n.Val == val {
-        return 0
-    } else if n.Val < val {
-        return depth(n.Left, val) + 1
-    }
-    return depth(n.Right, val) + 1
-}
-
 // BFS traverse (level order traversal)
 func (tree *BST) BFS() {
     if tree.Root == nil { return }
