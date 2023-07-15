@@ -2,12 +2,14 @@ import Foundation
 
 let list = DoublyLinkedList()
 list.append(1)
+list.append(1)
+list.append(1)
 list.append(2)
 list.append(3)
 list.append(4)
 list.append(5)
 
-list.remove_all(5)
+list.remove_all(1)
 
 list.toString()
 
@@ -41,15 +43,20 @@ class DoublyLinkedList {
         }
     }
 
-    // remove all
+    // remove 
     func remove_all(_ val: Int) {
-        var curr = head
-        while curr != nil {
-            if curr!.value == val {
-                curr?.previous?.next = curr!.next
-                curr?.next?.previous = curr!.previous
+        if head != nil && head?.value == val {
+            head?.next?.previous = nil
+            head = head?.next
+        } else {
+            var curr = head
+            while curr != nil {
+                if curr!.value == val {
+                    curr?.previous?.next = curr!.next
+                    curr?.next?.previous = curr!.previous
+                }
+                curr = curr?.next
             }
-            curr = curr?.next
         }
     }
     
