@@ -68,6 +68,7 @@ func merge_sort(_ arr: [Int]) -> [Int] {
     }
     return arr
 }
+
 func bubble_sort(_ arr: inout [Int]) {
     for _ in 0...arr.count-2 {
         for j in 0...arr.count-2 {
@@ -77,6 +78,7 @@ func bubble_sort(_ arr: inout [Int]) {
         }
     }
 }
+
 func insertion_sort(_ arr: inout [Int]) {
     for i in 1...arr.count-1 {
         let temp = arr[i]
@@ -88,6 +90,7 @@ func insertion_sort(_ arr: inout [Int]) {
         arr[hole] = temp
     }
 }
+
 func selection_sort(_ arr: inout [Int]) {
     for i in 0...arr.count-2 {
         var mIndex = i
