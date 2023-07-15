@@ -5,10 +5,34 @@ print(arr)
 //bubble_sort(&arr)
 //selection_sort(&arr)
 //insertion_sort(&arr)
+//arr = merge_sort(arr)
 
-arr = merge_sort(arr)
+quick_sort(&arr, 0, arr.count-1)
+
 
 print(arr)
+
+func quick_sort(_ arr: inout [Int], _ start: Int,_ end: Int) {
+    if start > end {
+        return
+    }
+    let pivotIndex = partition(&arr, start, end)
+    quick_sort(&arr, start, pivotIndex-1)
+    quick_sort(&arr, pivotIndex+1, end)
+
+    func partition(_ arr: inout [Int],_ start: Int, _ end: Int) -> Int {
+        var pivotIndex = start
+        let pivot = arr[end]
+        for i in start..<end {
+            if arr[i] <= pivot {
+                arr.swapAt(i, pivotIndex)
+                pivotIndex += 1
+            }
+        }
+        arr.swapAt(pivotIndex, end)
+        return pivotIndex
+    }
+}
 
 func merge_sort(_ arr: [Int]) -> [Int] {
     var arr = arr
@@ -19,7 +43,6 @@ func merge_sort(_ arr: [Int]) -> [Int] {
     let left = merge_sort( [Int](arr[0..<mid]) )
     let right = merge_sort( [Int](arr[mid..<arr.count]) )
     merge(&arr, left, right)
-
     func merge(_ ans: inout [Int], _ left:[Int],_ right:[Int]) {
         var k = 0, a = 0, b = 0
         while a < left.count && b < right.count {
@@ -43,20 +66,8 @@ func merge_sort(_ arr: [Int]) -> [Int] {
             k += 1
         }
     }
-
     return arr
 }
-
-
-
-
-func quick_sort(_ arr: inout [Int]) {
-}
-func optimize_quick_sort(_ arr: inout [Int]) {
-
-}
-
-
 func bubble_sort(_ arr: inout [Int]) {
     for _ in 0...arr.count-2 {
         for j in 0...arr.count-2 {
@@ -66,7 +77,6 @@ func bubble_sort(_ arr: inout [Int]) {
         }
     }
 }
-
 func insertion_sort(_ arr: inout [Int]) {
     for i in 1...arr.count-1 {
         let temp = arr[i]
@@ -78,7 +88,6 @@ func insertion_sort(_ arr: inout [Int]) {
         arr[hole] = temp
     }
 }
-
 func selection_sort(_ arr: inout [Int]) {
     for i in 0...arr.count-2 {
         var mIndex = i
