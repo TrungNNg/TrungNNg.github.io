@@ -11,8 +11,11 @@ func main() {
     trie.Insert("def")
     trie.Insert("defgh")
    
-    ans := trie.WithPrefix("")
-    p(ans)
+    trie.RemoveWord(trie.Root, "a", 0)
+
+    b := trie.WordExist("abc")
+
+    p(b)
 }
 
 type Trie struct {
@@ -52,13 +55,28 @@ func (t *Trie) WordExist(word string) bool {
     return curr.isWord
 }
 
-// TODO
-func (t *Trie) RemoveWord(word string) {
-    
-}
-
-func (t *Trie) RemoveAllWithPrefix(prefix string) {
-    
+func (t *Trie) RemoveWord(node *TrieNode, word string, index int) bool {
+    // note that index == len(word) not len(word) - 1
+    // because we want to remove starting from the node that 
+    // the last character point to
+    if index == len(word) {
+        if !node.isWord {
+            return false
+        }
+        node.isWord = false
+        return len(node.m) == 0
+    }
+    if n, ok := node.m[rune(word[index])]; !ok {
+        return false
+    } else {
+        if t.RemoveWord(n, word, index + 1) {
+            delete(node.m, rune(word[index]))
+        }
+        if node.isWord {
+            return false
+        }
+    }
+    return len(node.m) == 0
 }
 
 func (t *Trie) WithPrefix(prefix string) []string {
