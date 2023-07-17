@@ -14,9 +14,9 @@ func main() {
 
     p(mh.arr)
 
-    mh.Update(1, 0)
+    //mh.Update(1, 0)
 
-    p(mh.arr)
+    //p(mh.arr)
 
 }
 
@@ -31,16 +31,12 @@ func (h *MinHeap) Push (val int) {
 }
 
 func up(arr []int, index int) {
-    parentIndex := (index - 1) / 2
-    for parentIndex >= 0 {
+    for index > 0 {
+        parentIndex := (index - 1) / 2
         if arr[index] < arr[parentIndex] {
             arr[index], arr[parentIndex] = arr[parentIndex], arr[index]
         }
-        if parentIndex == 0 {
-            break
-        }
         index = parentIndex
-        parentIndex = (index - 1) / 2
     }
 }
 
@@ -59,7 +55,7 @@ func down(arr []int, index int) {
     leftChild := index * 2 + 1
     for leftChild <= len(arr) - 1 {
         rightChild := leftChild + 1
-        if rightChild <= len(arr) - 1 && arr[rightChild] < arr[leftChild] {
+        if rightChild <= len(arr) - 1 && arr[rightChild] < arr[leftChild] && arr[rightChild] < arr[index] {
             arr[rightChild], arr[index] = arr[index], arr[rightChild]
             index = rightChild
         } else {
