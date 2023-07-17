@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heap & Priority Queue</title>
+    <link rel="stylesheet" href="post.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-light.min.css">
+</head>
+<body>
+<div class="content">
+    <div class="nav"><a href="blog.html">Back</a></div>
+    <hr>
+    <h1>Heap & Priority Queue</h1>
+    <!---<p class="date">Feb 2, 2023</p>-->
+    <img src="images/priority-queue.png" alt="priority queue" style="width:300px;height:250px;">
+
+    <p style="padding-top: 20px;">
+A Priority queue is a container where each element has a additional "priority" associated with its. The element with high priority is served before an element with low priority. If two elements have the same priority, they are served according to their order in the queue.
+Priority queue often implement using heap. Heap is a data structure that always arrange its element so that the largest element (in Max Heap) or smallest element (in Min Heap) is at root. This allow fast retrival of largest or smallest element in a collection since they are always at root. Heap need to be a <a href="https://web.cecs.pdx.edu/~sheard/course/Cs163/Doc/FullvsComplete.html">complete binary tree</a>, but very often 
+implemented using array.
+    </p>
+    <p>Below is an implementation of Min Heap for integer but it can easily turn into a Priority Queue for any comparable data type by replacing the minimum comparition logic with a priority function. This is also how Go implement its standard library <a href="https://pkg.go.dev/container/heap">heap container</a>. By implementing the <a href="https://pkg.go.dev/sort#Interface">heap.Interface </a> interface 
+you provide the heap container a priority function (the Less() function) which will decide the heap to be a Min Heap, Max Heap, or Priority Queue for any comparable data type.</p>
+<pre><code class="language-go">type MinHeap struct {
+    arr []int
+}</code></pre>
+
+<h2>Push | O(log<sub>2</sub>n)</h2>
+<p>The new value will be inserted at the end of the array, then bubble up until the heap property is achieved.</p>
+<pre><code class="language-go">func (h *MinHeap) Push (val int) {
+    h.arr = append(h.arr, val)
+    up(h.arr, len(h.arr)-1)
+}
+
+func up(arr []int, index int) {
+    parentIndex := (index - 1) / 2
+    for parentIndex >= 0 {
+        if arr[index] < arr[parentIndex] {
+            arr[index], arr[parentIndex] = arr[parentIndex], arr[index]
+        }
+        if parentIndex == 0 {
+            break
+        }
+        index = parentIndex
+        parentIndex = (index - 1) / 2
+    }
+}</code></pre>
+
+<h2>Pop | O(log<sub>2</sub>n)</h2>
+<p>The last element will replace root, then go down until heap property is achieved.</p>
+<pre><code class="language-go">func (h *MinHeap) Pop () int {
+    ans := h.arr[0]
+    lastIndex := len(h.arr) - 1
+    h.arr[0], h.arr[lastIndex] = h.arr[lastIndex], h.arr[0]
+    h.arr = h.arr[:lastIndex]
+    down(h.arr, 0)
+    return ans
+}
+
+func down(arr []int, index int) {
+    leftChild := index * 2 + 1
+    for leftChild <= len(arr) - 1 {
+        rightChild := leftChild + 1
+        if rightChild <= len(arr) - 1 && arr[rightChild] < arr[leftChild] {
+            arr[rightChild], arr[index] = arr[index], arr[rightChild]
+            index = rightChild
+        } else {
+            if arr[leftChild] < arr[index] {
+                arr[leftChild], arr[index] = arr[index], arr[leftChild]
+            }
+            index = leftChild
+        }
+        leftChild = index * 2 + 1
+    }
+}</code></pre>
+
+<h2>Update | O(log<sub>2</sub>n)</h2>
+<p>We often want to update the priority of an element aldready in the queue, like in Dijkstra algorithm for example, which require fixing the heap after update.</p>
+<pre><code class="language-go">func (h *MinHeap) Update (index, val int) {
+    h.arr[index] = val
+    // h.arr[index] can be smaller than its parent or bigger than it childrens
+    parentIndex := (index - 1) / 2
+    if h.arr[index] < h.arr[parentIndex] {
+        up(h.arr, index)
+    } else {
+        down(h.arr, index)
+    }
+}</code></pre>
+
+<hr>
+    <h2>References</h2>
+    <ul>
+        <li><a href="https://web.cecs.pdx.edu/~sheard/course/Cs163/Doc/FullvsComplete.html">Complete Binary Tree - Portland State University</a></li>
+        <li><a href="https://www.youtube.com/watch?v=HqPJF2L5h9U&t=2106s&ab_channel=AbdulBari">AbdulBari on Youtube</a></li>
+        <li><a href="https://en.wikipedia.org/wiki/Heap_(data_structure)">Heap - Wikipedia</a></li>
+        <li><a href="https://en.wikipedia.org/wiki/Priority_queue">Priority Queue - Wikipedia</a></li>
+    </ul>
+    <hr>
+    <div class="footer"></div>
+</div>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>hljs.highlightAll()</script>
+</body>
+</html>
