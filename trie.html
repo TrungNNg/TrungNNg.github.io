@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trie</title>
+    <link rel="stylesheet" href="post.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-light.min.css">
+</head>
+<body>
+<div class="content">
+    <div class="nav"><a href="blog.html">Back</a></div>
+    <hr>
+    <h1>Trie (Prefix tree)</h1>
+    <!---<p class="date">Feb 2, 2023</p>-->
+    <img src="images/trie.png" alt="trie tree" style="width:300px;height:250px;">
+
+    <p style="padding-top: 20px;">
+        A trie also called prefix tree, is a type of search tree used for locating specific keys from within a set.
+        These keys are most often strings, and each node represent a single character in the string. The Operation of a single string (insert, update, delete)
+        takes O(n) where n is the length of the string. Each Trie Node contains a map that map a character to a Trie Node, and a Boolean value to indicate 
+        if the current string is an existing word in the Trie or not.
+    </p>
+    
+<pre><code class="language-go">type Trie struct {
+    Root *TrieNode
+}
+
+func NewTrie() *Trie {
+    return &Trie{Root: &TrieNode{m: map[rune]*TrieNode{}, isWord:false }}
+}
+
+type TrieNode struct {
+    m map[rune]*TrieNode
+    isWord bool
+}</code></pre>
+
+<h2>Insert | O(n)</h2>
+<pre><code class="language-go">func (t *Trie) Insert(word string) {
+    curr := t.Root
+    for _, r := range word {
+        if n, ok := curr.m[r]; ok {
+            curr = n
+        } else {
+            curr.m[r] = &TrieNode{m: map[rune]*TrieNode{}, isWord:false}
+            curr = curr.m[r]
+        }
+    }
+    curr.isWord = true
+}</code></pre>
+
+<h2>Word Exist | O(n)</h2>
+<pre><code class="language-go">func (t *Trie) WordExist(word string) bool {
+    curr := t.Root
+    for _, r := range word {
+        if _, ok := curr.m[r]; !ok {
+            return false
+        }
+        curr = curr.m[r]
+    }
+    return curr.isWord
+}</code></pre>
+
+<h2>Remove Word | O(n)</h2>
+<p>To remove a word from Trie, we need to remove the nodes representing each characters of the word only those node only 
+    represent the target word's character.</p>
+<pre><code class="language-go">func (t *Trie) RemoveWord(node *TrieNode, word string, index int) bool {
+    // note that index == len(word) not len(word) - 1
+    // because we want to remove starting from the node that 
+    // the last character point to
+    if index == len(word) {
+        if !node.isWord {
+            return false
+        }
+        node.isWord = false
+        return len(node.m) == 0
+    }
+    if n, ok := node.m[rune(word[index])]; !ok {
+        return false
+    } else {
+        if t.RemoveWord(n, word, index + 1) {
+            delete(node.m, rune(word[index]))
+        }
+        if node.isWord {
+            return false
+        }
+    }
+    return len(node.m) == 0
+}</code></pre>
+
+<h2>With Prefix | O(n)</h2>
+<p>Return an array of strings with the same prefix.</p>
+<pre><code class="language-go">func (t *Trie) WithPrefix(prefix string) []string {
+    curr := t.Root
+    for _, r := range prefix {
+        if _, ok := curr.m[r]; !ok {
+            return []string{}
+        }
+        curr = curr.m[r]
+    }
+    ans := []string{}
+    withPrefixDFS(curr, prefix, &ans)
+    return ans
+}
+
+func withPrefixDFS (node *TrieNode, prefix string, ans *[]string) {
+    if node.isWord {
+        *ans = append(*ans, prefix)
+    }
+    for k, n := range node.m {
+        withPrefixDFS(n, prefix + string(k), ans)
+    }
+}</code></pre>
+
+<hr>
+    <h2>References</h2>
+    <ul>
+        <li><a href="https://en.wikipedia.org/wiki/Trie">Wikipedia - Quick Sort</a></li>
+        <li><a href="https://www.youtube.com/watch?v=AXjmTQ8LEoI&ab_channel=TusharRoy-CodingMadeSimple">TusharRoy-CodingMadeSimple on Youtube</a></li>
+    </ul>
+    <hr>
+    <div class="footer"></div>
+</div>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>hljs.highlightAll()</script>
+</body>
+</html>
