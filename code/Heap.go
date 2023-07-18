@@ -10,7 +10,12 @@ func main() {
     mh.Push(2)
     mh.Push(1)
     mh.Push(3)
-    mh.Push(4)
+    mh.Push(9)
+    mh.Push(9)
+    mh.Push(5)
+    mh.Push(5)
+    mh.Push(10)
+    mh.Push(10)
 
     p(mh.arr)
 

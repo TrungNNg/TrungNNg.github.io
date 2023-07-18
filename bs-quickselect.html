@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binary Search & Quick Select</title>
+    <link rel="stylesheet" href="post.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-light.min.css">
+</head>
+<body>
+<div class="content">
+    <div class="nav"><a href="blog.html">Back</a></div>
+    <hr>
+    <h1>Binary Search & Quick Select</h1>
+    <!---<p class="date">Feb 2, 2023</p>-->
+    <p>Visualization of the binary search algorithm where 7 is the target value</p>
+    <img src="images/binary-search.png" alt="binary search" style="width:420px;height:252px;">
+
+    <p style="padding-top: 20px;">Binary search is a search algorithm that finds the position of a target value within a sorted array. 
+It compares the target value to the middle element of the array; if they are unequal, the half in which the target 
+        cannot lie is eliminated and the search continues on the remaining half until it is successful. If the search ends with the 
+        remaining half being empty, the target is not in the array.
+    </p>
+    <h2>Binary Search | O(log<sub>2</sub>n)</h2>
+<pre><code class="language-swift">func BinarySearch(_ arr: [Int],_ target: Int) -> Int {
+    var left = 0, right = arr.count-1
+    while left <= right {
+        // mid = right + left / 2 might cause integer overflow if right + left > 2^31
+        var mid = (right - left) / 2 + left
+        if arr[mid] == target {
+            return mid
+        } else if arr[mid] < target {
+            left = mid + 1
+        } else {
+            right = mid - 1
+        }
+    }
+    return -1
+}</code></pre>
+
+<h2>Quick Select | O(n)</h2>
+<p>Animated visualization of the quickselect algorithm. Selecting the 22nd smallest value.</p>
+<img src="images/Selecting_quickselect_frames.gif" alt="quick select gif" style="width:300px;height:250px;">
+<p style="padding-top: 20px;">If we need to find the k'th (largest or smallest) element in an array, the simple simple approach will be 
+    just sort the array then return the element at k index, this however require O(nlog<sub>2</sub>n) 
+runtime because of sorting. Quick Select algorithm can solve these type of problems in O(n) by using properties of binary search and the 
+Quick Sort's partition function.</p>
+<p>After one partition, the partition index will be the k'th smallest element, it is also the (size(array) - k)'th largest element. If the 
+    pivot index is not the k'th we looking for, we can continue search in the half that the k'th element will be in.</p>
+<pre><code class="language-swift">// find k'th largest in array
+func QuickSelect(_ arr: [Int],_ k: Int) -> Int {
+    var arr = arr
+    var left = 0, right = arr.count - 1
+    let k = arr.count - k
+    var p = partition(&arr,left,right)
+    while p != k {
+        if p < k {
+            left = p + 1
+            p = partition(&arr,left,right)
+        }
+        if p > k {
+            right = p - 1
+            p = partition(&arr,left, right)
+        }
+    }
+    return arr[p]
+}
+
+func partition(_ arr: inout [Int],_ start: Int,_ end: Int) -> Int {
+    let pivot = arr[end]
+    var pIndex = start
+    for i in start..&lt;end {
+        if arr[i] < pivot {   // if the pivot has duplicate. all duplicates will go right
+            arr.swapAt(i, pIndex)
+            pIndex += 1
+        }
+    }
+    arr.swapAt(pIndex, end)
+    return pIndex
+}</code></pre>
+
+<hr>
+    <h2>References</h2>
+    <ul>
+        <li><a href="https://en.wikipedia.org/wiki/Quickselect">Wikipedia - Quick Select</a></li>
+        <li><a href="https://en.wikipedia.org/wiki/Binary_search_algorithm">Wikipedia - Binary Search</a></li>
+    </ul>
+    <hr>
+    <div class="footer"></div>
+</div>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>hljs.highlightAll()</script>
+</body>
+</html>
