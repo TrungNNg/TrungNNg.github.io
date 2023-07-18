@@ -24,7 +24,7 @@ It compares the target value to the middle element of the array; if they are une
     <h2>Binary Search | O(log<sub>2</sub>n)</h2>
 <pre><code class="language-swift">func BinarySearch(_ arr: [Int],_ target: Int) -> Int {
     var left = 0, right = arr.count-1
-    while left <= right {
+    while left <= right {   // left <= right to handle case when only 1 element
         // mid = right + left / 2 might cause integer overflow if right + left > 2^31
         var mid = (right - left) / 2 + left
         if arr[mid] == target {
