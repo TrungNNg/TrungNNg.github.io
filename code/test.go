@@ -2,12 +2,12 @@ package main
 
 import (
     "fmt"
+    ""
 )
 var p = fmt.Println
 func main() {
-    n := 2
-    arr := [n]int{}
-    p(arr)
+    arr := []int{1,2,2}
+    p(subsets(arr))
 }
 
 // generate all subset

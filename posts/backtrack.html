@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backtracking, Permutation, Combination, Subset</title>
+    <link rel="stylesheet" href="post.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-light.min.css">
+</head>
+<body>
+<div class="content">
+    <div class="nav"><a href="../blog.html">Back</a></div>
+    <hr>
+    <h1>Backtracking, Permutation, Combination, Subset</h1>
+    <!---<p class="date">Feb 2, 2023</p>-->
+    
+    <p style="padding-top: 20px;">Backtracking is a problem-solving technique used to solve problems that involve making choices. 
+        It's essentially similar to DFS (Depth-First Search) as it explores all possible decisions in the recursion tree. However, unlike DFS, it can terminate a decision path and then undo the previous choice (backtrack).</p>
+
+    <h2>Sudo code</h2>
+    <pre><code class="language-none">func Search(decisions) {
+    If there is decisions left to make:
+        for each available choice C for this decision:
+            Choose C.
+            Seach the remaining decisions that could follow C.
+            Un-choose C.
+}</code></pre>
+
+    <h2>All Subsets | O(2<sup>n</sup>)</h2>
+    <p>Given an array nums, generate all subsets of nums.</p>
+<pre><code class="language-go">// [1,2] -> [], [1], [2], [1,2]
+func subsets(nums []int) [][]int {
+    ans := [][]int{}
+    //m := map[int]bool{}
+    subsets_helper(&ans, nums, []int{})
+    return ans
+}
+
+func subsets_helper(ans *[][]int, remain, current []int) {
+    if len(remain) == 0 {
+        *ans = append(*ans, append([]int{}, current...))
+        return
+    }
+    current = append(current, remain[0])
+    subsets_helper(ans, remain[1:], current)
+    current = current[:len(current)-1]
+    subsets_helper(ans, remain[1:], current)
+}</code></pre>
+
+<h2>Permutation | O(n!)</h2>
+<img src="images/permutation.png" alt="permutation">
+<p style="padding-top: 20px;">Permutation of 3 elements.</p>
+<pre><code class="language-go">func permute(nums []int) [][]int {
+    ans := [][]int{}
+    m := map[int]bool{}
+    permute_helper(&ans, nums, []int{}, m)
+    return ans
+}
+
+func permute_helper(ans *[][]int, remain, current []int, chosen map[int]bool) {
+    if len(current) == len(remain) {
+        *ans = append(*ans, append([]int{}, current...))
+        return
+    }
+    for i := range remain {
+        if !chosen[remain[i]] {
+            current = append(current, remain[i])
+            chosen[remain[i]] = true
+            permute_helper(ans, remain, current, chosen)
+            current = current[:len(current)-1]
+            chosen[remain[i]] = false
+        }
+    }
+}</code></pre>
+
+
+<h2>Combination | O(C(n*k))</h2>
+<img src="images/combination.png" alt="combination">
+<p style="padding-top: 20px;">Combination of 2 elements from a set of 4.</p>
+<pre><code class="language-go">func combine(nums []int, k int) [][]int {
+    ans := [][]int{}
+    combine_helper(&ans, nums, []int{}, k, 0)
+    return ans
+}
+
+func combine_helper(ans *[][]int, remain, current []int, k int, index int) {
+    if len(current) == k {
+        *ans = append(*ans, append([]int{}, current...))
+    } else {
+        for i := index; i < len(remain); i++ {
+            current = append(current, remain[i])
+            combine_helper(ans, remain, current, k, i+1)
+            current = current[:len(current)-1]
+        }
+    }
+}</code></pre>
+
+<hr>
+    <h2>References</h2>
+    <ul>
+        <li><a href="https://en.wikipedia.org/wiki/Combinations_and_permutations">Wikipedia - Combination and Permutation</a></li>
+    </ul>
+    <hr>
+    <div class="footer"></div>
+</div>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>hljs.highlightAll()</script>
+</body>
+</html>
