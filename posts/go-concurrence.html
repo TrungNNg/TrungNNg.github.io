@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Concurrence in Go</title>
+    <link rel="stylesheet" href="post.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-light.min.css">
+</head>
+<body>
+<div class="content">
+    <div class="nav"><a href="../blog.html">Back</a></div>
+    <hr>
+    <h1>Concurrence in Go</h1>
+    <!---<p class="date">Feb 2, 2023</p>-->
+    <img src="images/thread.png" alt="thread" style="width:300px;height:283px;">
+
+    <p style="padding-top: 20px;">
+        In the field of computing, a thread can be thought of as the current execution context of a running program, 
+        often is the current values of CPU registers. The operating system can pause a running thread by preserving 
+        its register values, allowing it to be resumed later. Threads within a process share memory space, facilitating communication among them.
+        In Go, this communication is achieved using "channels". Go handles deadlock situations similarly to other programming languages, using "locks". 
+        Go provide a simple approach to write concurrence program.
+    </p>
+
+    <p>
+        The "go" keyword in Go, create a new goroutine for foo(). Because the main-goroutine will not wait for foo(), it will finish excution and exit before foo() finish executing. 
+    </p>
+    
+<pre><code class="language-go">import (
+    "fmt"
+    "time"
+)
+
+func main() {
+    go foo()
+    time.Sleep(500 * time.Millisecond)
+}
+
+func foo() {
+    fmt.Println("Hello World!")
+}</code></pre>
+
+<h2>Wait for goroutine.</h2>
+<p>To determine when all goroutines have finished, use a counter for each goroutine. Each goroutine will decrease the counter when it 
+    finishes executing. The 'sync' package provides us with this counter, known as 'sync.WaitGroup'.
+</p>
+<pre><code class="language-go">import (
+    "fmt"
+    "sync"
+)
+
+func main() {
+    var wg sync.WaitGroup
+    wg.Add(1)  // add 1 to counter
+    go foo(&wg)
+
+    wg.Add(1)
+    go bar(&wg)
+
+    wg.Wait()  // block until counter reach 0
+    fmt.Println("main() exit.")
+}
+
+func foo(wg *sync.WaitGroup) {
+    defer wg.Done() // decrease counter by 1
+    fmt.Println("Hello World!")
+
+}
+
+func bar(wg *sync.WaitGroup) {
+    defer wg.Done()
+    fmt.Println("Bye World!.")
+}</code></pre>
+
+<h2>Handle critical section.</h2>
+<p>In computing, a critical section is a value that is accessed by multiple threads. This section need to be protected to prevent problem.</p>
+<pre><code class="language-go">func main() {
+    sum := 0
+
+    var wg sync.WaitGroup
+    wg.Add(1)
+    go foo(&wg, &sum)   // add 1000 to sum
+
+    wg.Add(1)
+    go bar(&wg, &sum)   // add 1000 to sum
+
+    wg.Wait()
+    fmt.Println("sum: ", sum)   // expected sum == 2000
+}
+
+func foo(wg *sync.WaitGroup, sum *int) {
+    defer wg.Done()
+    for i := 0; i < 1000; i++ {
+        *sum += 1
+    }
+}
+
+func bar(wg *sync.WaitGroup, sum *int) {
+    defer wg.Done()
+    for i := 0; i < 1000; i++ {
+        *sum += 1
+    }
+}</code></pre>
+<p style="padding-top: 20px;padding-bottom: 17px;">The result is inconsistent.</p>
+<pre><code class="language-go">>>>>>>>>>>>>>> 0 website/code % gor test.go
+sum:  2000
+>>>>>>>>>>>>>> 0 website/code % gor test.go
+sum:  2000
+>>>>>>>>>>>>>> 0 website/code % gor test.go
+sum:  1268
+>>>>>>>>>>>>>> 0 website/code % gor test.go
+sum:  2000
+>>>>>>>>>>>>>> 0 website/code % gor test.go
+sum:  2000
+>>>>>>>>>>>>>> 0 website/code % gor test.go
+sum:  1854
+>>>>>>>>>>>>>> 0 website/code % gor test.go
+sum:  2000
+</code></pre>
+<p style="padding-top: 20px;padding-bottom: 17px;">To fix this, we use sync.Mutex to protect critical section. Despite different name, mutex in Go is basically a <a href="https://en.wikipedia.org/wiki/Lock_(computer_science)">lock</a>.</p>
+<pre><code class="language-go">import (
+    "fmt"
+    "sync"
+)
+
+func main() {
+    sum := 0
+
+    var wg sync.WaitGroup
+    var mu sync.Mutex
+
+    wg.Add(1)
+    go foo(&wg, &sum, &mu)   // add 100_000 to sum
+
+    wg.Add(1)
+    go bar(&wg, &sum, &mu)   // add 100_000 to sum
+
+    wg.Wait()
+    fmt.Println("sum: ", sum)    // guarantee sum == 200_000 
+}
+
+func foo(wg *sync.WaitGroup, sum *int, mu *sync.Mutex) {
+    defer wg.Done()
+    defer mu.Unlock()
+    mu.Lock()           // get the lock and prevent bar() to run
+    for i := 0; i < 100000; i++ {
+        *sum += 1
+    }
+}
+
+func bar(wg *sync.WaitGroup, sum *int, mu *sync.Mutex) {
+    defer wg.Done()
+    defer mu.Unlock()
+
+    // if foo() called mu.Lock() first, bar() will block, and vice versa.
+    mu.Lock()          
+    for i := 0; i < 100000; i++ {
+        *sum += 1
+    }
+}</code></pre>
+<p style="padding-top: 20px;padding-bottom: 17px;">The result is now correct.</p>
+<pre><code class="language-go">>>>>>>>>>>>>>> 0 website/code % gor test.go
+sum:  200000
+>>>>>>>>>>>>>> 0 website/code % gor test.go
+sum:  200000
+>>>>>>>>>>>>>> 0 website/code % gor test.go
+sum:  200000
+>>>>>>>>>>>>>> 0 website/code % gor test.go
+sum:  200000
+>>>>>>>>>>>>>> 0 website/code % gor test.go
+sum:  200000
+>>>>>>>>>>>>>> 0 website/code % gor test.go
+sum:  200000
+>>>>>>>>>>>>>> 0 website/code % gor test.go
+sum:  200000
+>>>>>>>>>>>>>> 0 website/code % gor test.go
+sum:  200000
+>>>>>>>>>>>>>> 0 website/code % gor test.go
+sum:  200000
+>>>>>>>>>>>>>> 0 website/code % gor test.go
+sum:  200000</code></pre>
+
+<h2>Communicaton between goroutines using Channel.</h2>
+<p>Channel can be think of as a queue that link between 2 goroutines. Using a channel, 2 goroutines can communicate by sending and recieving data, Go use this communication as a concurrence synchronization technique.
+    Example from "A tour of Go":
+</p>
+<pre><code class="language-go">import "fmt"
+
+func sum(s []int, c chan int) {
+    sum := 0
+    for _, v := range s {
+        sum += v
+    }
+    c <- sum // send sum to c
+}
+
+func main() {
+    s := []int{7, 2, 8, -9, 4, 0}
+
+    // this is a un-buffer, bi-directional channel, which can be 
+    // used for both sending and receiving one value at a time
+    c := make(chan int)
+
+    go sum(s[:len(s)/2], c)
+    go sum(s[len(s)/2:], c)
+    x, y := <-c, <-c // block until receive from c
+
+    fmt.Println(x, y, x+y)
+}</code></pre>
+
+<p style="padding-top: 20px;padding-bottom: 17px;">There are 2 type of channel, un-buffered and buffered channel. Un-buffered can not store value which mean that the 
+sender will block until there is a receiver which take the data. The receiver also block until it receive data from the channel. With buffered channel, a goroutine can send
+data until the channel is full. </p>
+
+<h2>The Select statement.</h2>
+<p>Used to </p>
+<pre><code class="language-go">func (t *Trie) WithPrefix(prefix string) []string {
+    curr := t.Root
+    for _, r := range prefix {
+        if _, ok := curr.m[r]; !ok {
+            return []string{}
+        }
+        curr = curr.m[r]
+    }
+    ans := []string{}
+    withPrefixDFS(curr, prefix, &ans)
+    return ans
+}
+
+func withPrefixDFS (node *TrieNode, prefix string, ans *[]string) {
+    if node.isWord {
+        *ans = append(*ans, prefix)
+    }
+    for k, n := range node.m {
+        withPrefixDFS(n, prefix + string(k), ans)
+    }
+}</code></pre>
+
+<hr>
+    <h2>References</h2>
+    <ul>
+        <li><a href="https://en.wikipedia.org/wiki/Trie">Wikipedia - Quick Sort</a></li>
+        <li><a href="https://www.youtube.com/watch?v=AXjmTQ8LEoI&ab_channel=TusharRoy-CodingMadeSimple">TusharRoy-CodingMadeSimple on Youtube</a></li>
+    </ul>
+    <hr>
+    <div class="footer"></div>
+</div>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>hljs.highlightAll()</script>
+</body>
+</html>
