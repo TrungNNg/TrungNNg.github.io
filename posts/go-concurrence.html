@@ -211,37 +211,45 @@ func main() {
 
 <p style="padding-top: 20px;padding-bottom: 17px;">There are 2 type of channel, un-buffered and buffered channel. Un-buffered can not store value which mean that the 
 sender will block until there is a receiver which take the data. The receiver also block until it receive data from the channel. With buffered channel, a goroutine can send
-data until the channel is full. </p>
+data until the channel is full. A channel can be closed, and can be test if closed using the "comma ok" idiom. </p> <p>For loop and range will receives values from the channel repeatedly until it is closed.<pre><code>for _ := range ch</code></pre></p> 
 
 <h2>The Select statement.</h2>
-<p>Used to </p>
-<pre><code class="language-go">func (t *Trie) WithPrefix(prefix string) []string {
-    curr := t.Root
-    for _, r := range prefix {
-        if _, ok := curr.m[r]; !ok {
-            return []string{}
+<p>Used to wait on multiple channel operations (send, recieve, close) in a goroutine. It block until one of the operation is ready then it execute that case. If multiple channel are ready then it will select a random case. But now we have a problem,
+    if the channel is closed, then the recieve operation will always complete (recieve zero value), so the select statement will always select this case. There are no build in clean way to handle this. Example from "A tour of Go".
+</p>
+<pre><code class="language-go">import "fmt"
+
+func fibonacci(c, quit chan int) {
+    x, y := 0, 1
+    for {
+        select {
+        case c <- x:
+            x, y = y, x+y
+        case <-quit:
+            fmt.Println("quit")
+            return
         }
-        curr = curr.m[r]
     }
-    ans := []string{}
-    withPrefixDFS(curr, prefix, &ans)
-    return ans
 }
 
-func withPrefixDFS (node *TrieNode, prefix string, ans *[]string) {
-    if node.isWord {
-        *ans = append(*ans, prefix)
-    }
-    for k, n := range node.m {
-        withPrefixDFS(n, prefix + string(k), ans)
-    }
+func main() {
+    c := make(chan int)
+    quit := make(chan int)
+    go func() {
+        for i := 0; i < 10; i++ {
+            fmt.Println(<-c)
+        }
+        quit <- 0
+    }()
+    fibonacci(c, quit)
 }</code></pre>
 
 <hr>
     <h2>References</h2>
     <ul>
-        <li><a href="https://en.wikipedia.org/wiki/Trie">Wikipedia - Quick Sort</a></li>
-        <li><a href="https://www.youtube.com/watch?v=AXjmTQ8LEoI&ab_channel=TusharRoy-CodingMadeSimple">TusharRoy-CodingMadeSimple on Youtube</a></li>
+        <li><a href="https://en.wikipedia.org/wiki/Thread_(computing)">Wikipedia - Thread</a></li>
+        <li><a href="https://en.wikipedia.org/wiki/Lock_(computer_science)">Wikipedia - Lock</a></li>
+        <li><a href="https://go.dev/tour/concurrency/1">A tour of Go - Concurrence</a></li>
     </ul>
     <hr>
     <div class="footer"></div>
