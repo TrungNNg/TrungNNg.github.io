@@ -13,8 +13,11 @@ func main() {
 
 }
 
+func bf(matrix [][]int, row, col int) {
+    
+}
 
-func dfs(matrix [][]int, row, col int) {
+func df(matrix [][]int, row, col int) {
     visited := map[[2]int]bool{[2]int{row,col}:true}
     stack := [][2]int{[2]int{row,col}}
     for len(stack) != 0 {
