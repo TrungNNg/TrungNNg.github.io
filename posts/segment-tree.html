@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Segment Tree</title>
+    <link rel="stylesheet" href="post.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-light.min.css">
+</head>
+<body>
+<div class="content">
+    <div class="nav"><a href="../blog.html">Back</a></div>
+    <hr>
+    <h1>Segment Tree</h1>
+    <!---<p class="date">Feb 2, 2023</p>-->
+    <img src="images/segment-tree.png" alt="segment-tree" style="width:450px;height:400px;">
+
+    <p style="padding-top: 20px;">In computer science, a segment tree, also known as a statistic tree, is a tree data structure used for storing information about intervals, or segments. It allows querying which of the stored segments contain a given point. It is, in principle, a static structure and cannot be modified once built. A similar data structure is the interval tree.
+
+        A segment tree for a set I of n intervals uses O(n log n) storage and can be built in O(n log n) time. Segment trees support searching for all the intervals that contain a query point in time O(log n + k), k being the number of retrieved intervals or segments.[1]
+    </p>
+    <h2>Construct Segment tree | O(n log n)</h2>
+<pre><code class="language-go">func segment_tree(arr []int) []int {
+    stree := make([]int, np2(len(arr)) * 2 - 1)
+    build_tree(arr, stree, 0, len(arr)-1, 0)
+    return stree
+}
+
+func build_tree(arr, stree []int, l, h, pos int) {
+    if l == h {
+        stree[pos] = arr[l]
+        return
+    }
+    m := (l + h) / 2
+    build_tree(arr, stree, l, m, pos*2+1)
+    build_tree(arr, stree, m+1, h, pos*2+2)
+    stree[pos] = min(stree[pos*2+1], stree[pos*2+2])
+}
+
+// if a is not power of 2, find the next power of 2
+func np2(a int) int {
+    ans := 1
+    for ans < a {
+        ans *= 2
+    }
+    return ans
+}
+
+func min(a, b int) int {
+    if a < b { return a}
+    return b
+}</code></pre>
+
+<p style="padding-top: 20px;">The construction of a segment tree involves recursively dividing the array into smaller segments and building a binary tree structure to represent those segments. Here's a general overview of how a segment tree is constructed:
+    <br>
+    Base Case:
+    The base case for constructing a segment tree is when you have a single element. Each leaf node of the segment tree corresponds to a single element in the array.
+    <br>
+    Divide and Conquer:
+    Start by dividing the array into two equal (or nearly equal) halves. Recursively build segment trees for both halves.
+    <br>
+    Combine:
+    After the subsegment trees are constructed, you need to combine the information from child nodes to build the parent nodes. The value of a parent node typically represents an aggregation of its children's values. For example, if you're building a segment tree to find the minimum value in a range, the parent node would store the minimum of its two child nodes' values.
+    <br>
+    Repeat:
+    Continue this process recursively until you build the root of the segment tree, which represents the entire array.
+</p>
+
+<h2>Find minimum of a segment | O(log n)</h2>
+<pre><code class="language-go">func main() {
+    stree := segment_tree([]int{-1,3,4,0,2,1})
+
+    // find minumum from index 2 to 4
+    min_range(stree, 2,4, 0, 5, 0) // 0
+
+    // find minimum from index 0 to 4
+    min_range(stree,0,4,0,5,0)  // -1
+}
+
+func min_range(stree []int, ql, qh, l, h, pos int) int {
+    // if query range >= current range return value of current range
+    if ql <= l && qh >= h {
+        return stree[pos]
+    } else if ql > h || qh < l {
+        // if query range is outside current range return max
+        return int(^uint(0) >> 1)
+    }
+    // if query range partial overlap, compare with left and right subtree
+    m := (h + l) / 2
+    return min( min_range(stree, ql, qh, l, m, pos*2+1),
+                min_range(stree, ql, qh, m+1, h, pos*2+2) )
+}</code></pre>
+
+<p style="padding-top: 20px;">To query a range in a segment tree, we make comparision with the range of the original array. Here 3 cases can happen. <br>
+1. If the query range is overlap (query range contain current range), then return the value of segment tree at this index <br>2. If the query range is outside current range, then return a very large number. <br>3. Else continue compare with left and right substree.</p>
+
+
+
+
+
+<hr>
+    <h2>References</h2>
+    <ul>
+        <li><a href="https://en.wikipedia.org/wiki/Segment_tree">Wikipedia - Segment tree</a></li>
+        <li><a href="https://www.youtube.com/watch?v=ZBHKZF5w4YU&t=1464s&ab_channel=TusharRoy-CodingMadeSimple">Youtube - TusharRoy-CodingMadeSimple</a></li>
+    </ul>
+    <hr>
+    <div class="footer"></div>
+</div>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>hljs.highlightAll()</script>
+</body>
+</html>
