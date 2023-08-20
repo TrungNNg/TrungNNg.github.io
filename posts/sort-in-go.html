@@ -77,6 +77,39 @@ sort.Slice(arr, func (i, j int) bool {   // method 4
     return arr[i] < arr[j]
 })</code></pre>
 </p>
+
+<h2>Sort custom type example:</h2>
+<pre><code class="language-go">type Edge struct {
+    fv int  // first vertex
+    sv int  // second vertex
+    w  int  // weight
+}
+
+func main() {
+
+    // un-directed and weighted graph represented using edgelist
+    graph := []Edge { 
+        Edge{0,1,1},
+        Edge{0,2,2},
+        Edge{1,2,3},
+        Edge{1,3,2},
+        Edge{2,4,1},
+        Edge{3,4,5},
+    }
+    // [{0 1 1} {0 2 2} {1 2 3} {1 3 2} {2 4 1} {3 4 5}]
+
+    // sort the edgelist by weight, or we can also use priority queue
+    sort.Slice(graph, func (i, j int) bool {
+        return graph[i].w < graph[j].w
+    })
+    // [{0 1 1} {2 4 1} {0 2 2} {1 3 2} {1 2 3} {3 4 5}]  
+}</code></pre>
+
+
+
+
+
+
     <hr>
     <h2>References</h2>
     <ul>
