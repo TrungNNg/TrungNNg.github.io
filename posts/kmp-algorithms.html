@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KMP Algorithms</title>
+    <link rel="stylesheet" href="post.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-light.min.css">
+</head>
+<body>
+<div class="content">
+    <div class="nav"><a href="../blog.html">Back</a></div>
+    <hr>
+    <h1>Knuth-Morris-Pratt (KMP) Algorithms</h1>
+    <!---<p class="date">Feb 2, 2023</p>-->
+    <img src="images/strings.png" alt="strings">
+
+    <p style="padding-top: 20px;">
+        In computer science, the Knuth–Morris–Pratt algorithm (or KMP algorithm) is a string-searching algorithm that searches for occurrences of a "word"
+        W within a main "text string" S by employing the observation that when a mismatch occurs, the word itself embodies sufficient information to determine where 
+        the next match could begin, thus bypassing re-examination of previously matched characters.
+    </p>
+    <h2>KMP Implementation | O(m + n)</h2>
+<pre><code class="language-go">// return the occurrences of pattern in string using KMP algorithm
+func KMP(s,pat string) int {
+    if len(pat) == 0 { return 0 }
+    lps := LBS(pat)
+
+    // lps and pat will start at 1
+    lps = append([]int{0},lps...)
+    pat = "_" + pat   // the first char can be anything, since it never use
+
+    i, j := 0, 0
+    ans := 0
+    for i < len(s) {
+        if s[i] == pat[j+1] { // match
+            if j + 1 == len(pat) - 1 { // pattern complete
+                ans += 1
+                j = 0    // reset j, count non-overlap pattern
+                i += 1
+                continue
+            }
+            j += 1
+            i += 1
+        } else if j > 0 {
+            j = lps[j]
+        } else {
+            i += 1
+        }
+    }
+    return ans
+}
+
+func LBS(pat string) []int {
+    lps := make([]int, len(pat))
+    m := map[rune]int{}
+    for i,r := range pat {
+        if in, ok := m[r]; ok {
+            if rune(pat[i]) == r {
+                lps[i] = lps[i-1] + 1
+            } else {
+                lps[i] = in
+            }
+        } else {
+            lps[i] = 0
+            m[r] = i
+        }
+    }
+    return lps
+}</code></pre>
+
+<p style="padding-top: 20px;padding-bottom: 17px;">In the Knuth-Morris-Pratt (KMP) algorithm, "LPS" stands for "Longest Prefix Suffix." The LPS array is a crucial part of the KMP algorithm and is used to optimize the string searching process.
+
+    The Longest Prefix Suffix (LPS) of a string refers to the length of the longest proper prefix of the string that is also a suffix of the same string. In other words, it measures the length of the longest substring at the end of the string that matches the beginning of the string.
+    
+    For example, consider the string "ABAB" and its LPS values:
+    
+    The LPS value for the first character "A" is 0 (no proper prefix that is also a suffix).
+    The LPS value for the second character "B" is 0.
+    The LPS value for the third character "A" is 1 (the substring "A" at the end matches the prefix "A").
+    The LPS value for the fourth character "B" is 2 (the substring "AB" at the end matches the prefix "AB").
+    In the KMP algorithm, the LPS array is precomputed for the pattern (substring being searched for) before performing the actual string search. The LPS array values guide the algorithm's behavior when a mismatch occurs during string searching. They help determine how far the algorithm can skip ahead in the text without re-comparing characters unnecessarily.</p>
+
+
+<hr>
+    <h2>References</h2>
+    <ul>
+        <li><a href="https://en.wikipedia.org/wiki/Knuth%E2%80%93Morris%E2%80%93Pratt_algorithm">Wikipedia - Knuth–Morris–Pratt algorithm</a></li>
+        <li><a href="https://www.youtube.com/watch?v=V5-7GzOfADQ&t=532s&ab_channel=AbdulBari">Youtube - Abdul Bari</a></li>
+    </ul>
+    <hr>
+    <div class="footer"></div>
+</div>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>hljs.highlightAll()</script>
+</body>
+</html>
