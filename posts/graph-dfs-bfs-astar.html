@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Breadth-first, Depth-first, and A* on Graph</title>
+    <link rel="stylesheet" href="post.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-light.min.css">
+</head>
+<body>
+<div class="content">
+    <div class="nav"><a href="../blog.html">Back</a></div>
+    <hr>
+    <h1>Breadth-first, Depth-first, A* Algorithms</h1>
+    <!---<p class="date">Feb 2, 2023</p>-->
+
+    <h2>Breath Frist Search (BFS)</h2>
+    <img src="images/bfs.gif" alt="bfs">
+    <p style="padding-top: 20px;padding-bottom: 17px;">
+        BFS is an algorithm that can be used to traverse tree or graph data structure. The idea is simple, explore a node (vertex) then add its neighbors into a queue to exlore its neighbor next. That is why BFS can be use to find shortest path.
+    </p>
+<pre><code class="language-go">func BFS(r, c int) bool {
+    queue := list.New()
+    queue.PushBack(point{r, c})
+
+    // to trace back path
+    parent := map[point]point{}
+
+    for queue.Len() != 0 {
+        current := queue.Front()
+        row, col := current.Value.(point).X, current.Value.(point).Y
+        if maze[row][col] == "G" {
+            pmaze()
+
+            // trace and print path
+            temp := current.Value.(point)
+            path := []point{}
+            for _, ok := parent[temp]; ok ; temp, ok = parent[temp] {
+                path = append(path, temp)
+            }
+            p("path length", len(path) - 1)
+            return len(path) - 1 <= 50
+        } else {
+            maze[row][col] = "O"
+            pmaze_reset()
+            next_pos := []point{point{row-1,col}, point{row+1, col}, point{row, col-1}, point{row, col+1}}
+            for _, pnt := range next_pos {
+                if !isNotValid(pnt.X, pnt.Y) {
+                    parent[pnt] = current.Value.(point)
+                    queue.PushBack(pnt)
+                }
+            }
+        }
+        queue.Remove(current)
+    }
+    return false
+}</code></pre>
+
+<h2>Depth First Search</h2>
+<img src="images/dfs.gif" alt="dfs">
+<p style="padding-top: 20px;padding-bottom: 17px;">Similar to BFS, DFS is an algorithm used to traverse a tree or graph data structure, but unlike BFS, DFS explore one path completely before explore a new path, that why it call depth first.</p>
+<pre><code class="language-go">func DFS(row, col int) bool {
+    if row < 0 || col < 0 || row >= len(maze) || col >= len(maze) {
+        return false
+    } else if maze[row][col] == "#" || maze[row][col] == "O" || maze[row][col] == "v" {
+        return false
+    } else if maze[row][col] == "G" {
+        return true
+    }
+    maze[row][col] = "O"
+    pmaze_reset()
+    res :=  DFS(row+1, col) || DFS(row-1, col) || 
+            DFS(row, col+1) || DFS(row, col-1)
+    maze[row][col] = "v"
+    pmaze_reset()
+    return res
+}</code></pre>
+
+<h2>A* Algorithm</h2>
+<img src="images/astar.gif" alt="dfs">
+<p style="padding-top: 20px;padding-bottom: 17px;">A* algorithm is an algorithm use to search for shortest path in a graph that we know (or can estimate) the destination. A* use a priority queue to choose the path that has highest score (shortest to the destination) to explore first. By using this greedy approach, A* can find shortest path very fast. The cost function to calculate path score often called heuristic function.</p>
+<pre><code class="language-go">// Piority queue for A*
+type PQ []item
+func (pq PQ) Len() int { return len(pq) }
+func (pq PQ) Less(i, j int) bool { return pq[i].piority < pq[j].piority }
+func (pq PQ) Swap(i, j int) { pq[i], pq[j] = pq[j], pq[i] }
+func (pq *PQ) Push(x any) {
+    *pq = append(*pq, x.(item))
+}
+func (pq *PQ) Pop() any {
+    item := (*pq)[len(*pq)-1]
+    *pq = (*pq)[:len(*pq)-1]
+    return item
+}
+
+// A* Algorithm
+func AStar(r, c int) bool {
+    
+    start := item{r,c,1}
+    pq := PQ{start}
+    heap.Init(&pq)
+
+    for len(pq) > 0 {
+        cur := heap.Pop(&pq).(item)
+        row, col := cur.X, cur.Y
+
+        if maze[row][col] == "G" { return true}
+
+        // find valid path and their cost
+        items := []item{item{X:row-1, Y:col}, item{X:row+1, Y:col}, item{X:row, Y:col-1}, item{X:row, Y:col+1}}
+        for _,itm := range items {
+            if !isNotValid(itm.X, itm.Y) {
+                itm.piority = cost(itm.X, itm.Y)
+                heap.Push(&pq, itm)
+            }
+        }
+        maze[row][col] = "O"
+        pmaze_reset()
+    }
+
+    return false
+}
+
+// return cost for given cordinate x and y
+func cost(r, c int) int {
+    //goal_r, goal_c := 39, 31
+    goal_r, goal_c := 18, 23
+    return abs(r,goal_r) + abs(c,goal_c)
+}</code></pre>
+
+<h2>Dijktra's Algorithm</h2>
+<p>Dijktra's Algorithm is also an algorithm to find shortest path in a weighted graph, in case of a maze which all path is equal Dijktra algorithm will just become BFS. Dijktra's algorithm similar to A* it use a priority queue to explore path with lowest cost first, and it does not use any heuristic function.</p>
+<h2>Full code</h2>
+<pre><code class="language-go">package main
+import (
+    "fmt"
+    "time"
+    "container/list"
+    "container/heap"
+)
+
+var p = fmt.Println
+
+func setBit(n int) int {
+    ans := 0
+    for n > 0 {
+        if n % 2 == 1 {
+            ans += 1
+        }
+        n = n >> 1
+    }
+    return ans
+}
+
+func pmaze() {
+    r := 0
+    for _, row := range maze {
+        p(row)
+        r += 1
+    }
+}
+
+var maze = [25][25]string{}
+
+func main() {
+    fav := 1350
+
+    // generate maze
+    for i := 0; i < len(maze); i++ {
+        for j := 0; j < len(maze[i]); j++ {
+            sum := (i*i + 3*i + 2*i*j + j + j*j) + fav
+            if setBit(sum) % 2 == 0 {
+                maze[j][i] = "."
+            } else {
+                maze[j][i] = "#"
+            }
+        }
+    }
+
+    // set goal cordinate
+    // need to update A* cost function with similar value
+    maze[18][23] = "G"
+
+    // A*
+    AStar(1,1)
+
+    // BFS
+    // fmt.Printf("%v                  \n", BFS(1,1))
+
+    // DFS
+    // fmt.Printf("%v                                                \n", DFS(1,1))
+}
+
+// to store x and y cordinate and piority in A*
+type point struct {
+    X, Y int
+}
+
+type item struct {
+    X, Y int
+    piority int
+}
+
+// Piority queue for A*
+type PQ []item
+func (pq PQ) Len() int { return len(pq) }
+func (pq PQ) Less(i, j int) bool { return pq[i].piority < pq[j].piority }
+func (pq PQ) Swap(i, j int) { pq[i], pq[j] = pq[j], pq[i] }
+func (pq *PQ) Push(x any) {
+    *pq = append(*pq, x.(item))
+}
+func (pq *PQ) Pop() any {
+    item := (*pq)[len(*pq)-1]
+    *pq = (*pq)[:len(*pq)-1]
+    return item
+}
+
+// A* algorithm
+func AStar(r, c int) bool {
+    
+    start := item{r,c,1}
+    pq := PQ{start}
+    heap.Init(&pq)
+
+    for len(pq) > 0 {
+        cur := heap.Pop(&pq).(item)
+        row, col := cur.X, cur.Y
+
+        if maze[row][col] == "G" { return true}
+
+        // find valid path and their cost
+        items := []item{item{X:row-1, Y:col}, item{X:row+1, Y:col}, item{X:row, Y:col-1}, item{X:row, Y:col+1}}
+        for _,itm := range items {
+            if !isNotValid(itm.X, itm.Y) {
+                itm.piority = cost(itm.X, itm.Y)
+                heap.Push(&pq, itm)
+            }
+        }
+        maze[row][col] = "O"
+        pmaze_reset()
+    }
+
+    return false
+}
+
+// return cost for given cordinate x and y
+func cost(r, c int) int {
+    
+    // the heuristic function need to know the cordinate of goal to estimate path score
+    goal_r, goal_c := 18, 23
+
+    return abs(r,goal_r) + abs(c,goal_c)
+}
+
+func abs(a, b int) int {
+    if a > b {return a - b}
+    return b - a
+}
+
+func BFS(r, c int) bool {
+    queue := list.New()
+    queue.PushBack(point{r, c})
+
+    // to trace back path
+    parent := map[point]point{}
+
+    for queue.Len() != 0 {
+        current := queue.Front()
+        row, col := current.Value.(point).X, current.Value.(point).Y
+        if maze[row][col] == "G" {
+            pmaze()
+
+            // trace and print path
+            temp := current.Value.(point)
+            path := []point{}
+            for _, ok := parent[temp]; ok ; temp, ok = parent[temp] {
+                path = append(path, temp)
+            }
+            p("path length", len(path) - 1)
+            return len(path) - 1 <= 50
+        } else {
+            maze[row][col] = "O"
+            pmaze_reset()
+            next_pos := []point{point{row-1,col}, point{row+1, col}, point{row, col-1}, point{row, col+1}}
+            for _, pnt := range next_pos {
+                if !isNotValid(pnt.X, pnt.Y) {
+                    parent[pnt] = current.Value.(point)
+                    queue.PushBack(pnt)
+                }
+            }
+        }
+        queue.Remove(current)
+    }
+    return false
+}
+
+func DFS(row, col int) bool {
+    if row < 0 || col < 0 || row >= len(maze) || col >= len(maze) {
+        return false
+    } else if maze[row][col] == "#" || maze[row][col] == "O" || maze[row][col] == "v" {
+        return false
+    } else if maze[row][col] == "G" {
+        return true
+    }
+    maze[row][col] = "O"
+    pmaze_reset()
+    res :=  DFS(row+1, col) || DFS(row-1, col) || 
+            DFS(row, col+1) || DFS(row, col-1)
+    maze[row][col] = "v"
+    pmaze_reset()
+    return res
+}
+
+func pmaze_reset() {
+    pmaze()
+    fmt.Print("\033[25A")
+    time.Sleep(100 * time.Millisecond)
+}
+
+func isNotValid(X, Y int) bool {
+    return X < 0 || X >= len(maze) || Y < 0 || Y >= len(maze) || 
+           maze[X][Y] == "#" || maze[X][Y] == "O"
+}</code></pre>
+
+
+<hr>
+    <h2>References</h2>
+    <ul>
+        <li><a href="https://en.wikipedia.org/wiki/Breadth-first_search">Wikipedia - BFS</a></li>
+        <li><a href="https://en.wikipedia.org/wiki/Depth-first_search">Wikipedia - DFS</a></li>
+        <li><a href="https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm">Wikipedia - Dijktra's Algorithm</a></li>
+        <li><a href="https://en.wikipedia.org/wiki/A*_search_algorithm">Wikipedia - A*</a></li>
+    </ul>
+    <hr>
+    <div class="footer"></div>
+</div>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>hljs.highlightAll()</script>
+</body>
+</html>
