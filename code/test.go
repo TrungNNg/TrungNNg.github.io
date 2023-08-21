@@ -11,8 +11,43 @@ type Edge struct {
     w  int  // weight
 }
 
-func main() {
+type DisjoinSet []int
 
+// in this simple example, a vertex just a number which map to index of disjoin set.
+// if vertex is a custom type, a map with key and value are vertex pointers can be used.
+func (d *DisjoinSet) Find(vertex int) int {
+    current := (*d)[vertex]
+    for current > -1 {
+        vertex = current
+        current = (*d)[vertex]
+    }
+    return vertex
+}
+
+func (d *DisjoinSet) Union(fv, sv int) {
+    fp := (*d)[fv]  // first parent
+    fpw := 0        // frist parent weight
+    sp := (*d)[sv]  // second parent
+    spw := 0        // second parent weight
+    for fp > -1 {
+        fv = fp
+        fp = (*d)[fv]
+        fpw += 1
+    }
+    for sp > -1 {
+        sv = sp
+        sp = (*d)[sv]
+        spw += 1
+    }
+    // spw will be parent
+    if fpw > spw {
+        (*d)[fv] = sv
+    } else {
+        (*d)[fv] = sv
+    }
+}
+
+func main() {
     // un-directed and weighted graph represented using edgelist
     graph := []Edge { 
         Edge{0,1,1},
@@ -22,13 +57,41 @@ func main() {
         Edge{2,4,1},
         Edge{3,4,5},
     }
-    p(graph)
 
-    // sort the edgelist, or we can also use priority queue
+    min_tree := Kruskal(graph, 5) // 5 is number of vertices
+    p(min_tree)
+}
+
+// return minimum spanning tree using Kruskal algorithm which use disjoin set
+func Kruskal(graph []Edge, vertices int) []Edge {
+    // minimum spanning tree
+    min_tree := []Edge{}
+
+    // sort the edgelist by edge weight
     sort.Slice(graph, func (i, j int) bool {
         return graph[i].w < graph[j].w
     })
-    p(graph)
 
+    // disjoint set
+    ds := make(DisjoinSet, vertices)
+    for i := range ds { ds[i] = -1 } // each vertex will be in a set by itself.
+
+    // loop through the edge list from lowest cost to largest
+    // perform Find operation on 2 vertices to see which set the belong to.
+    // if 2 vertices in different set -> perform Union operation, add to minimum spanning tree.
+    // if 2 vertices in a same set -> skip this edge.
+    for _, v := range graph {
+        fg := ds.Find(v.fv) // first group
+        sg := ds.Find(v.sv) // second group
+        
+        // if fg != sg then 2 vertices is in different set -> perform Union and add to min tree
+        if fg != sg {
+            ds.Union(v.fv, v.sv)
+            min_tree = append(min_tree, v)
+        }
+    }
+    return min_tree
 }
+
+
 
