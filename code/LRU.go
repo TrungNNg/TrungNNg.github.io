@@ -119,9 +119,12 @@ func (c *LRU) add(v int) {
     c.m[v] = npt
 }
 
-func (c *LRU) contains(v int) bool {
-     _, ok := c.m[v]
-     return ok
+func (c *LRU) contains(v int) {
+     if npt, ok := c.m[v]; ok {
+        // move the cache hit element on top so it become most recently used
+        c.remove(npt) 
+        c.add(v)
+     }
 }
 
 func (c *LRU) remove(v int) {

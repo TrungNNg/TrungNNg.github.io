@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LRU Cache</title>
+    <link rel="stylesheet" href="post.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-light.min.css">
+</head>
+<body>
+<div class="content">
+    <div class="nav"><a href="../blog.html">Back</a></div>
+    <hr>
+    <h1>Least Recently Used (LRU) Cache</h1>
+    <!---<p class="date">Feb 2, 2023</p>-->
+    <img src="images/lru-cache.avif" alt="lru cache" style="width:646px;height:530px;">
+    <p style="padding-top: 20px;">
+        A LRU cache is an cache that implemented the least recently use eviction policy. If the cache is full, it need to pick an element to evict, the evicted element is the one not access for the longest time.
+        To keep track of the order of which an element is accessed, LRU use a doubly linked list. The most recently accessed element will be append on the front, the least access element will be at the end.
+    </p>
+  
+<h2>Construct a LRU cache.</h2>
+<pre><code class="language-go">type LRU struct {
+    list    DLL
+    m       map[int]*Node
+    size    int
+    max_cap int
+}
+
+func (c *LRU) add(v int) {
+    if c.size >= c.max_cap {
+        // evict last recently use
+        c.list.removeTail()
+        c.size -= 1
+    }
+    npt := c.list.addFront(v)
+    c.size += 1
+    c.m[v] = npt
+}
+
+func (c *LRU) contains(v int) {
+     if npt, ok := c.m[v]; ok {
+        // move the cache hit element on top so it become most recently used
+        c.remove(npt) 
+        c.add(v)
+     }
+}
+
+func (c *LRU) remove(v int) {
+    if npt, ok := c.m[v]; ok {
+        c.list.remove(npt)
+        c.size -= 1
+    }
+}
+
+// print LRU cache
+func (c *LRU) pLRU() {
+    c.list.pht()
+}
+</code></pre>
+<p style="padding-top: 20px;">As stated, the cache will use a doubly linked list (DLL) to keep track of element's order. However, one big disadvantage of of linked list data structure is that it take O(n) for many operations include seaching and removing, which are the 2 common operations for a cache.
+    That is why the LRU cache also use another data structure which is a hash table in which the key is the value and the (map's) value is a pointer to the element in the list.
+    For every access operation (add and search), the priority of the element will get updated (move to the front).
+</p>
+<h2>Full code</h2>
+
+<pre><code class="language-go">package main
+import (
+    "fmt"
+)
+var p = fmt.Println
+
+type Node struct {
+    prev *Node
+    next *Node
+    val int
+}
+
+type DLL struct {
+    head *Node
+    tail *Node
+}
+
+func (l *DLL) addFront(v int) *Node {
+    if l.head == nil {
+        l.head = &Node{val:v}
+        l.tail = l.head
+        return l.head
+    }
+    l.head.prev = &Node{nil, l.head, v}
+    l.head = l.head.prev
+    return l.head
+}
+
+func (l *DLL) removeTail() {
+    if l.tail != nil {
+        l.tail = l.tail.prev
+        l.tail.next = nil
+    }
+}
+
+func (l *DLL) remove(npt *Node) {
+    if l.head == npt && l.tail == npt {
+        l.head = nil
+        l.tail = nil
+    } else if l.tail == npt {
+        l.removeTail()
+    } else if l.head == npt {
+        l.head = npt.next
+        if l.head != nil {
+            l.head.prev = nil
+        }
+    } else {
+        npt.prev.next = nil
+        npt.next.prev = nil
+    }
+}
+
+// print head to tail
+func (l *DLL) pht() {
+    curr := l.head
+    for curr != nil {
+        fmt.Print(curr.val, " ")
+        curr = curr.next
+    }
+    p()
+}
+
+// print tail to head
+func (l *DLL) pth() {
+    curr := l.tail
+    for curr != nil {
+        fmt.Print(curr.val, " ")
+        curr = curr.prev
+    }
+    p()
+}
+
+func main() {
+
+    /* test DLL
+    l := DLL{}
+    l.addFront(1)
+    l.addFront(2)
+    l.addFront(3)
+    l.addFront(4)
+
+    // head to tail
+    l.pht()
+
+    l.removeTail()
+
+    l.pht()
+    */
+
+    // an LRU cache with capacity 5
+    cache := LRU{DLL{}, map[int]*Node{}, 0, 5}
+    cache.add(1)
+    cache.add(2)
+    cache.add(3)
+    cache.add(4)
+    cache.add(5)
+    cache.pLRU()
+    cache.remove(1)
+    cache.pLRU()
+    cache.add(6)
+    cache.pLRU()
+}
+
+type LRU struct {
+    list    DLL
+    m       map[int]*Node
+    size    int
+    max_cap int
+}
+
+func (c *LRU) add(v int) {
+    if c.size >= c.max_cap {
+        // evict last recently use
+        c.list.removeTail()
+        c.size -= 1
+    }
+    npt := c.list.addFront(v)
+    c.size += 1
+    c.m[v] = npt
+}
+
+func (c *LRU) contains(v int) {
+     if npt, ok := c.m[v]; ok {
+        // move the cache hit element on top so it become most recently used
+        c.remove(npt) 
+        c.add(v)
+     }
+}
+
+func (c *LRU) remove(v int) {
+    if npt, ok := c.m[v]; ok {
+        c.list.remove(npt)
+        c.size -= 1
+    }
+}
+
+// print LRU cache
+    func (c *LRU) pLRU() {
+        c.list.pht()
+}</code></pre>
+
+
+
+
+
+<hr>
+    <h2>References</h2>
+    <ul>
+        <li><a href="https://github.com/trekhleb/javascript-algorithms/tree/master/src/data-structures/lru-cache">Github - javascript-algorithms</a></li>
+        <li><a href="https://www.youtube.com/watch?v=Hi5obC_CwIU&ab_channel=BytebyByte">Youtube - BytebyByte</a></li>
+    </ul>
+    <hr>
+    <div class="footer"></div>
+</div>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>hljs.highlightAll()</script>
+</body>
+</html>
