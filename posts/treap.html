@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Randomized Search Tree (Treap)</title>
+    <link rel="stylesheet" href="post.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-light.min.css">
+</head>
+<body>
+<div class="content">
+    <div class="nav"><a href="../blog.html">Back</a></div>
+    <hr>
+    <h1>Randomized Search Tree (Treap)</h1>
+    <!---<p class="date">Feb 2, 2023</p>-->
+    <img src="images/Treap.svg" alt="Treap" style="width:616px;height:490px;">
+    <p style="padding-top: 20px;">
+        A Randomized Search Tree is a binary tree data structure and can achieve (not-guarantee) balance using randomness, hence the name Randomized Search Tree. 
+        A different name for this data structure is Treap, which is a combine of Tree and Heap.
+    </p>
+  
+<h2>Treap implementation.</h2>
+<pre><code class="language-go">// higher pri mean higher priority
+type Node struct {
+    val int
+    pri int   // priority
+    lc  *Node // left child 
+    rc  *Node // right child
+}
+
+type Treap struct {
+    root *Node
+}</code></pre>
+<p style="padding-top: 20px;">In this example, I will use Max Heap (parent will have higher priority than its children). Other than that, Treap has the same characteristics as a Binary Search Tree, with lower values on the left and larger value on the right. 
+</p>
+<h2>Insert | O(log n)</h2>
+<p>Insert an element into the Treap is similar to insert into a BTS. However, after insertion, we need to check if the heap property is preserved, if not we need to perform rotation similar to AVL tree.</p>
+<pre><code class="language-go">func (t *Treap) Add(v int) {
+    t.root = t.add(v, t.root)
+}
+
+func (t *Treap) add(v int, node *Node) *Node {
+    if node == nil {
+        // a psudo-random number from [0 - 1000)
+        ran := rand.Intn(1000)
+        return &Node{v, ran, nil, nil}
+    } else if v < node.val {
+        node.lc = t.add(v, node.lc)
+        if node.lc.pri < node.pri {
+            node = t.leftRotate(node.lc, node)
+        }
+    } else { // v >= node.val
+        node.rc = t.add(v, node.rc)
+        if node.rc.pri > node.pri {
+            node = t.rightRotate(node, node.rc)
+        }
+    }
+    return node
+}
+
+func (t *Treap) leftRotate(l, r *Node) *Node {
+    r.lc = l.rc
+    l.rc = r
+    return l
+}
+
+func (t *Treap) rightRotate(l, r *Node) *Node {
+    l.rc = r.lc
+    r.lc = l
+    return r
+}</code></pre>
+
+<h2>Full code</h2>
+<pre><code class="language-go">package main
+import (
+    "fmt"
+    "math/rand"
+)
+var p = fmt.Println
+
+// higher pri mean higher priority
+type Node struct {
+    val int
+    pri int   // priority
+    lc  *Node // left child 
+    rc  *Node // right child
+}
+
+type Treap struct {
+    root *Node
+}
+
+func (t *Treap) Add(v int) {
+    t.root = t.add(v, t.root)
+}
+
+func (t *Treap) add(v int, node *Node) *Node {
+    if node == nil {
+        // a psudo-random number from [0 - 1000)
+        ran := rand.Intn(1000)
+        return &Node{v, ran, nil, nil}
+    } else if v < node.val {
+        node.lc = t.add(v, node.lc)
+        if node.lc.pri < node.pri {
+            node = t.leftRotate(node.lc, node)
+        }
+    } else { // v >= node.val
+        node.rc = t.add(v, node.rc)
+        if node.rc.pri > node.pri {
+            node = t.rightRotate(node, node.rc)
+        }
+    }
+    return node
+}
+
+func (t *Treap) leftRotate(l, r *Node) *Node {
+    r.lc = l.rc
+    l.rc = r
+    return l
+}
+
+func (t *Treap) rightRotate(l, r *Node) *Node {
+    l.rc = r.lc
+    r.lc = l
+    return r
+}
+
+func (t *Treap) BFS() {
+    if t.root == nil { return }
+    queue := []*Node{t.root}
+    for len(queue) != 0 {
+        curr := queue[0]
+        queue = queue[1:]
+        p(curr.val)
+        if curr.lc != nil {
+            queue = append(queue, curr.lc)
+        }
+        if curr.rc != nil {
+            queue = append(queue, curr.rc)
+        }
+    }
+}
+
+func main() {
+    treap := Treap{}
+    treap.Add(1)
+    treap.Add(2)
+        treap.Add(3)
+        treap.Add(4)
+        treap.Add(5)
+        treap.Add(6)
+        treap.BFS()
+}</code></pre>
+
+
+
+
+
+<hr>
+    <h2>References</h2>
+    <ul>
+        <li><a href="https://yourbasic.org/algorithms/treap/">yourbasic - Randomized Search Tree</a></li>    
+        <li><a href="https://en.wikipedia.org/wiki/Treap">wikipedia - Treap</a></li>    
+
+    </ul>
+    <hr>
+    <div class="footer"></div>
+</div>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>hljs.highlightAll()</script>
+</body>
+</html>
