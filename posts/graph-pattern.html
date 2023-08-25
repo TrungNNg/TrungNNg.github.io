@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graph Problems Patterns</title>
+    <link rel="stylesheet" href="post.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-light.min.css">
+</head>
+<body>
+<div class="content">
+    <div class="nav"><a href="../blog.html">Back</a></div>
+    <hr>
+    <h1>Graph Problems Patterns</h1>
+    <!---<p class="date">Feb 2, 2023</p>-->
+    <img src="images/graph.png" alt="graph" style="width:510px;height:310px;">
+    <p style="padding-top: 20px;">
+        Recognizing that a problem is related to graph is the most challenging aspect of dealing with graph-related problems. To do so, you can look for connections between data points to realize a problem can be represent using graph. Graph problems can be divide into 3 groups (patterns) which are Grouping, Solvability, and Ordering patterns. 
+    </p>
+  
+<h2>Grouping problems</h2>
+<p>These problem requires us to put a set of data points into groups, these groups are basically connected components (a sub-graph in which every vertex can reach any other vertex). There are many algorithms use to find connected components in graph.</p>
+
+<h2>Solvability (Pathing) problems</h2>
+<p>This is the most common pattern in graph, it often ask to find a valid path or shortest path. Note: shortest path here is not about distance but rather about choices. For example, in a chess game, there are multiple ways to arrive at check mate from a particular position, we want to find the shortest number of moves to win, to solve this we can generate all possible moves to build a decision tree, then traverse the tree from root to find shorst path to the win node. 
+</p>
+<p>Frame work<br>1. Define start state and win (end) state.<br>2. Define the edge (connection) between data. How one state transit to another state. <br>3. Perform a graph search.</p>
+
+<h2>Ordering problems</h2>
+<p>Given a set of data that have some dependence relationship, order these data points so that they satisfy the dependence requirement. For example, courses that have prerequisite and corequisite can be solve using Topology sort algorithm</p>
+
+
+
+
+
+<br>
+<hr>
+    <h2>References</h2>
+    <ul>
+        <li><a href="https://www.youtube.com/watch?v=AEvBeK261JI&t=60s&ab_channel=BytebyByte">Youtube - ByteByByte</a></li>
+    </ul>
+    <hr>
+    <div class="footer"></div>
+</div>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>hljs.highlightAll()</script>
+</body>
+</html>
