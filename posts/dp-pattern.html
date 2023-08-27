@@ -14,22 +14,30 @@
     <h1>Dynamic Programming Patterns</h1>
     <!---<p class="date">Feb 2, 2023</p>-->
     <p>
-        Dynamic programming is optimized recursion. Instead of compute all possible states, DP use cache to reduce computation cost. 
+        Dynamic programming is optimized recursion. Instead of compute all possible states, DP use cache to reduce computation cost. The most difficult things about construction a DP solution is to decide the state transition which can have 2 directions (top-down or bottom up) and 2 dimensions (linear or matrix).
     </p>
   
 <h2>Fibonacci Numbers</h2>
-<p>These problems often occure in array, the dirrection of state transition is in 1 direction / 1 dimension. The state at one index can be compute using 1 or more other indices until the final index is reached. The result of indices often cache to improve performance.</p>
+<p>In these problems, the state transition is in 1 dimension. The state at one index can be compute using 1 or more other indices until the end state is reached. The result of indices often cache to improve performance.</p>
 
 <h2>0/1 Knapsack</h2>
 <p>
-    These problems involves making choices to arrive at a certain states. 
+    These problems involves making choices to arrive at a certain states, . The states and choices becomes the row and column of a matrix, the direction of state transition is in 2 dimensions, the state of one grid element depends on 1 or more other grid elements. 0/1 mean the choice can be 0 or 1 (not include or include).
 </p>
-<p>Frame work<br>1. Define start state and win (end) state.<br>2. Define the edge (connection) between data. How one state transit to another state. <br>3. Perform a graph search.</p>
 
-<h2>Ordering problems</h2>
-<p>Given a set of data that have some dependence relationship, order these data points so that they satisfy the dependence requirement. For example, courses that have prerequisite and corequisite can be solve using Topology sort algorithm</p>
+<h2>Unbounded Knapsack</h2>
+<p>
+    Similar to 0/1 Knapsack problems, the state transition also in 2 dimensions. However the choice can be made unlimited number of time, hence the name unbounded. The state, however, need to be bounded.
+</p>
 
-
+<h2>Longest Common Subsequence</h2>
+<p>
+    2 dimensional, bottom-up problems in which the 2 strings are compared to find the longest common sub-sequence. 
+</p>
+<h2>Palindromes</h2>
+<p>
+    1 dimensional, bottom-up problems in which the algorithm start at an index and expand on both side to reach the end state.
+</p>
 
 
 
@@ -37,7 +45,7 @@
 <hr>
     <h2>References</h2>
     <ul>
-        <li><a href="https://www.youtube.com/watch?v=AEvBeK261JI&t=60s&ab_channel=BytebyByte">Youtube - ByteByByte</a></li>
+        <li><a href="https://www.youtube.com/watch?v=mBNrRy2_hVs&t=1524s&ab_channel=NeetCode">Youtube - NeetCode</a></li>
     </ul>
     <hr>
     <div class="footer"></div>
