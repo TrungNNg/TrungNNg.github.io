@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Programming</title>
+    <link rel="stylesheet" href="post.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-light.min.css">
+</head>
+<body>
+<div class="content">
+    <div class="nav"><a href="../blog.html">Back</a></div>
+    <hr>
+    <h1>Dynamic Programming Patterns</h1>
+    <!---<p class="date">Feb 2, 2023</p>-->
+    <p>
+        Dynamic programming is optimized recursion. Instead of compute all possible states, DP use cache to reduce computation cost. 
+    </p>
+  
+<h2>Fibonacci Numbers</h2>
+<p>These problems often occure in array, the dirrection of state transition is in 1 direction / 1 dimension. The state at one index can be compute using 1 or more other indices until the final index is reached. The result of indices often cache to improve performance.</p>
+
+<h2>0/1 Knapsack</h2>
+<p>
+    These problems involves making choices to arrive at a certain states. 
+</p>
+<p>Frame work<br>1. Define start state and win (end) state.<br>2. Define the edge (connection) between data. How one state transit to another state. <br>3. Perform a graph search.</p>
+
+<h2>Ordering problems</h2>
+<p>Given a set of data that have some dependence relationship, order these data points so that they satisfy the dependence requirement. For example, courses that have prerequisite and corequisite can be solve using Topology sort algorithm</p>
+
+
+
+
+
+<br>
+<hr>
+    <h2>References</h2>
+    <ul>
+        <li><a href="https://www.youtube.com/watch?v=AEvBeK261JI&t=60s&ab_channel=BytebyByte">Youtube - ByteByByte</a></li>
+    </ul>
+    <hr>
+    <div class="footer"></div>
+</div>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>hljs.highlightAll()</script>
+</body>
+</html>
