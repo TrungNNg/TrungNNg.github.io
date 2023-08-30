@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwiftUI Overview</title>
+    <link rel="stylesheet" href="post.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-light.min.css">
+</head>
+<body>
+<div class="content">
+    <div class="nav"><a href="../blog.html">Back</a></div>
+    <hr>
+    <h1>SwiftUI Overview</h1>
+    <!---<p class="date">Feb 2, 2023</p>-->
+    <img src="images/swiftui.png" alt="SwiftUI">
+    <p style="padding-top: 20px;">
+        SwiftUI is a user interface toolkit that let us design app in a declarative way. Many SwiftUI app design using the MVVM (Model-View-ViewModel) architecture. While there are many new concepts, SwiftUI is quite simple to understand by looking at 2 things, the MVVM architecture and the SwiftUI State Management model.
+    </p>
+    <p>
+        Like any other frontend framework, SwiftUI is all about syncing the user interface (views) and the data in memory (model), the code that manage this connection between views and model is the view-model.
+    </p>
+  
+<h2>MVVM architecture</h2>
+<img src="images/mvvm.png" alt="mvvm architecture"  style="width:900px;height:481px;">
+<p style="padding-top: 20px;">
+    The Model is all the code that deal with logic and data, things like business logic and data fetching and storing will be consider part of Model code. Model does not store the data, most of the time, it access database using framework like CoreData or SwiftData, or fetching data from API and store in memory. The Model will be a struct because Swift can not detect change in a class.
+</p>
+<p>
+    So why do we need View-Model instead of connect the Model straight to View? While it possible to do so, we won't have a place to put the connecting code, those connection logic should not stay in the Model or the View either, since View should only store code dealing with views.
+    The Views are code that handle display graphic on screen, animate views, and handle user gesture.
+</p>
+
+<h2>SwiftUI State Management</h2>
+<p>
+    There are 2 important things to understand in SwiftUI, Binding and Publisher. The Model is a Publisher, it can publish when something change and other code can subscribe to it to recieve notification. Binding is basically pointer for state that can detect change in pointing object and perform action. We need Binding to avoid coping state.
+</p>
+<p>
+    The View-Model conform to ObservableObject so that Views can observe the View-Model for changes. The View-Model does not notify change for every var rather only when the one marked with @Published property wrapper, which is usually the Model. The View can now observe the View-Model by create the View-Model using @StateObject or by reference using @ObservedObject. The View often use Binding to turn user input into temporary state (in View) then send to View-Model using View modifier.
+</p>
+
+
+
+
+<hr>
+    <h2>References</h2>
+    <ul>
+        <li><a href="https://www.youtube.com/watch?v=oWZOFSYS5GE&list=PLpGHT1n4-mAsxuRxVPv7kj4-dQYoC3VVu&index=4&ab_channel=Stanford">Youtube - CS193P Stanford</a></li>
+    </ul>
+    <hr>
+    <div class="footer"></div>
+</div>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>hljs.highlightAll()</script>
+</body>
+</html>
