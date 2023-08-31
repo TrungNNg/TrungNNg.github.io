@@ -114,7 +114,7 @@ func (d *DisjoinSet) Union(fv, sv int) {
     // Perform Find operation on 2 vertices to see which set the belong to.
     // If 2 vertices in different set -> perform Union operation, 
     // and add to minimum spanning tree.
-    // If 2 vertices in a same set -> skip this edge.
+    // If 2 vertices in a same set -> skip this edge (also this mean a cycle is detected)
     for _, v := range graph {
         fg := ds.Find(v.fv) // first group
         sg := ds.Find(v.sv) // second group
