@@ -14,10 +14,8 @@ func main() {
         4 : {},
     }
 
-    p(graph) 
-
-    //p(TopologySort(graph))
-    p(Kahn(graph))
+    p(TopologySort(graph))
+    //p(Kahn(graph))
 }
 
 // DFS
@@ -26,20 +24,20 @@ func TopologySort(graph map[int][]int) []int {
     ans := []int{}
     for k, _ := range graph {
         if !visited[k] {
-            T_helper(&ans, visited, k, graph)
+            dfs(&ans, visited, k, graph)
         }
     }
     // to check if the sort successful compare ans size and number of vertex
     return ans
 }
 
-func T_helper(ans *[]int, visited map[int]bool, vertex int, graph map[int][]int) {
+func dfs(ans *[]int, visited map[int]bool, vertex int, graph map[int][]int) {
     if visited[vertex] {
         return
     }
     visited[vertex] = true
     for _,v := range graph[vertex] {
-        T_helper(ans, visited, v, graph)
+        dfs(ans, visited, v, graph)
     }
     *ans = append([]int{vertex}, (*ans)...)
 }

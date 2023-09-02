@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Topological Sort</title>
+    <link rel="stylesheet" href="post.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-light.min.css">
+</head>
+<body>
+<div class="content">
+    <div class="nav"><a href="../blog.html">Back</a></div>
+    <hr>
+    <h1>Topological Sort (DFS and Kahn Algorithm)</h1>
+    <img src="images/topological-sort.png" alt="topological-sort">
+    <!---<p class="date">Feb 2, 2023</p>-->
+    <p style="padding-top: 20px;">
+        In computer science, a topological sort or topological ordering of a directed graph is a linear ordering of its vertices such that for every directed edge uv from vertex u to vertex v, u comes before v in the ordering. For instance, the vertices of the graph may represent tasks to be performed, and the edges may represent constraints that one task must be performed before another; in this application, 
+        a topological ordering is just a valid sequence for the tasks. Precisely, a topological sort is a graph traversal in which each node v is visited only after all its dependencies are visited. A topological ordering is possible if and only if the graph has no directed cycles, that is, if it is a directed acyclic graph (DAG). Any DAG has at least one topological ordering, and algorithms are known for constructing
+        a topological ordering of any DAG in linear time. Topological sorting has many applications especially in ranking problems such as feedback arc set. Topological sorting is possible even when the DAG has disconnected components.   
+    </p>
+
+    <p>
+    We can use DFS or Kahn's algorithm (BFS) to implement Topological Sort. 
+    </p>
+  
+<h2>DFS Approach | O(V + E)</h2>
+<p>The DFS algorithm will reach the last vertex in the graph and prepend it in-front of the path. Because of DFS, it is guarantee that before a vertex is added to the list, all vertices below the vertex in the DFS tree are already explored (added on path).</p>
+<pre><code class="language-go">func TopologySort(graph map[int][]int) []int {
+    visited := map[int]bool{}
+    ans := []int{}
+    for k, _ := range graph {
+        if !visited[k] {
+            dfs(&ans, visited, k, graph)
+        }
+    }
+    
+    // Note:
+    // to check if the sort successful or not 
+    // compare ans size and number of vertex
+    
+    return ans
+}
+
+func dfs(ans *[]int, visited map[int]bool, vertex int,graph map[int][]int){
+    if visited[vertex] {
+        return
+    }
+    visited[vertex] = true
+    for _,v := range graph[vertex] {
+        dfs(ans, visited, v, graph)
+    }
+
+    // add the visited vertex in-front
+    *ans = append([]int{vertex}, (*ans)...)
+}</code></pre>
+
+<h2>Kahn's algorithm (BFS approach) | O(V + E)</h2>
+<p>
+    Another approach is the use BFS, we maintain a queue of vertices with 0 in-degree (so their posision is in-front). While remove those vertices from the queue, we remove their out-edges as well which in-turn create new 0 in-degree vertices which then added to the queue.
+</p>
+<pre><code class="language-go">func Kahn (graph map[int][]int) []int {
+    
+    // build in-degree array to keep track of in-degree of all vertices
+    in_degree := map[int]int{}
+    for k := range graph {
+        in_degree[k] = 0
+    }
+    for _, l := range graph {
+        for _, v := range l {
+            in_degree[v] += 1
+        }
+    }
+
+    // find the first 0 in-degree vertices
+    queue := []int{}
+    for k, v := range in_degree {
+        if v == 0 {
+            queue = append(queue, k)
+        }
+    }
+
+    ans := []int{}
+    for len(queue) != 0 {
+        vertex := queue[0]
+        queue = queue[1:]
+        for _, v := range graph[vertex] {
+            in_degree[v] -= 1
+            if in_degree[v] == 0 {
+                queue = append(queue, v)
+            }
+        }
+        ans = append(ans, vertex)
+    }
+
+    // Note:
+    // to check if the sort successful or not 
+    // compare ans size and number of vertex
+    
+    return ans
+}</code></pre>
+
+
+<hr>
+    <h2>References</h2>
+    <ul>
+        <li><a href="https://leetcode.com/discuss/general-discussion/1078072/introduction-to-topological-sort">Leetcode - Introduction to Topological Sort</a></li>
+        <li><a href="https://en.wikipedia.org/wiki/Topological_sorting">Wikipedia - Topology Sort</a></li>
+    </ul>
+    <hr>
+    <div class="footer"></div>
+</div>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>hljs.highlightAll()</script>
+</body>
+</html>
