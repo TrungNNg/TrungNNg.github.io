@@ -17,6 +17,7 @@ func main() {
         7 : {5},
     }
     a_points := Tarjan(graph)
+    fmt.Print("articulation points: ")
     for k := range a_points {
         fmt.Print(k, " ")
     }
@@ -31,11 +32,27 @@ func Tarjan(graph map[int][]int) map[int]bool {
     disc_time := 0
     // in this example, -1 will represent no parent
     DFS(3,-1, &disc_time, graph, disc, low, visited, ans)
+
+    // to find bridges (edges which removal increase number of connected components)
+    // an edge is a bridge if both 2 conditions are true
+    // 1. it connect to an articulation point
+    // 2. the articulation point has lower low than its children
+    //    so the child subgraph does not have back-edge to the articulation point or its parent
+    bridges := [][2]int{}
+    for k := range ans {
+        for _, v := range graph[k] {
+            if low[k] < low[v] {
+                bridges = append(bridges, [2]int{k,v})
+            }
+        }
+    }
+    p("bridges:", bridges)
     return ans
 }
 
 func DFS(vertex, parent int, disc_time *int, graph map[int][]int, 
-         disc, low map[int]int, visited map[int]bool, ans map[int]bool) {
+         disc, low map[int]int, visited map[int]bool, 
+         ans map[int]bool) {
 
     disc[vertex] = *disc_time
     low[vertex]  = *disc_time
@@ -65,22 +82,6 @@ func DFS(vertex, parent int, disc_time *int, graph map[int][]int,
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
