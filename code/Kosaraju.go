@@ -16,7 +16,7 @@ func main() {
         7 : {6},
     }
 
-    SCCs := Kosajaru(graph)
+    SCCs := Kosaraju(graph)
     p(SCCs)
 }
 
@@ -33,7 +33,7 @@ func Transpose(graph map[int][]int) map[int][]int {
     return reverse_graph
 }
 
-func Kosajaru(graph map[int][]int) [][]int {
+func Kosaraju(graph map[int][]int) [][]int {
 
     // pass 1: build the stack
     stack := []int{}

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kosaraju Algorithm</title>
+    <link rel="stylesheet" href="post.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-light.min.css">
+</head>
+<body>
+<div class="content">
+    <div class="nav"><a href="../blog.html">Back</a></div>
+    <hr>
+    <h1>Kosaraju Algorithm</h1>
+    <!---<p class="date">Feb 2, 2023</p>-->
+    <img src="images/kojasaru.png" alt="Kojasaru" style="width:600px;height:280px;">
+    <p style="padding-top: 20px;">
+        In computer science, Kosaraju-Sharir's algorithm (also known as Kosaraju's algorithm) is a linear time algorithm to find the strongly connected components of a directed graph. It makes use of the fact that the transpose graph (the same graph with the direction of every edge reversed) has exactly the same strongly connected components as the original graph.    
+    </p>
+    <p>
+        The algorithm itself is simple to understand and implement, but not easy to see <strong>why</strong> it work.
+    </p>
+  
+<h2>Construct a graph.</h2>
+<img src="images/graph-kosajaru.png" alt="graph">
+<p>Credit <a href="https://csacademy.com/app/graph_editor/">Graph Editor</a></p>
+<p style="padding-bottom: 15px;">There are 3 SCCs in the graph above: [1,2,3] [4,5,6] [7]</p>
+<pre><code class="language-go">package main
+import (
+    "fmt"
+)
+var p = fmt.Println
+func main() {
+    // a directed graph implememented using adjacency list
+    graph := map[int][]int {
+        1 : {2},
+        2 : {3},
+        3 : {1,5},
+        4 : {5},
+        5 : {6},
+        6 : {4},
+        7 : {6},
+    }
+}</code></pre>
+
+<h2>Kosaraju Algorithm</h2>
+<p>
+    The algorithm first perfom DFS at any node to build a stack of vertices, it then reverse the graph (transpose function), finally it perfom DFS on the vertices in the stack to find valid SCC. 
+</p>
+<pre><code class="language-go">func Transpose(graph map[int][]int) map[int][]int {
+    reverse_graph := map[int][]int{}
+    for v, l := range graph {
+        for _, vertex := range l {
+            if _, ok := reverse_graph[vertex]; !ok {
+                reverse_graph[vertex] = []int{}
+            }
+            reverse_graph[vertex] = append(reverse_graph[vertex], v)
+        }
+    }
+    return reverse_graph
+}
+
+func Kosaraju(graph map[int][]int) [][]int {
+
+    // pass 1: build the stack
+    stack := []int{}
+    visited := map[int]bool{}
+    for v := range graph {
+        if !visited[v] {
+            helper(v, &stack, visited, graph)
+        }
+    }
+
+    // pass 2: reverse the graph
+    reverse_graph := Transpose(graph)
+
+    // DFS on stack to find SCCs
+    visited = map[int]bool{}
+    SCCs := [][]int{}
+    for len(stack) != 0 {
+        v := stack[0]
+        stack = stack[1:]
+        if !visited[v] {
+            SCC := []int{}
+            helper_2(v, stack, visited, reverse_graph, &SCC)
+            SCCs = append(SCCs, SCC)
+        }
+    }
+
+    return SCCs
+}
+
+// DFS on reverse graph and build SCC
+func helper_2(vertex int, stack []int, visited map[int]bool, 
+              reverse_graph map[int][]int, SCC *[]int) {
+    
+    if visited[vertex] {
+        return
+    }
+    visited[vertex] = true
+    for _, v := range reverse_graph[vertex] {
+        helper_2(v, stack, visited, reverse_graph, SCC)
+    }
+    *SCC = append(*SCC, vertex)
+}
+
+// DFS on original graph
+func helper(vertex int, stack *[]int, visited map[int]bool, 
+            graph map[int][]int) {
+    
+    if visited[vertex] {
+        return
+    }
+    visited[vertex] = true
+    for _, v := range graph[vertex] {
+        helper(v, stack, visited, graph)
+    }
+    *stack = append([]int{vertex}, (*stack)...)
+}</code></pre>
+<p style="padding-top: 20px;">So why the algorithm work? The explanation is <a href="https://stackoverflow.com/questions/53680188/kosaraju-s-algorithm-for-scc">here</a>.<br>In summary, given 2 SCCs let say 
+    S1 -> S2 (S1 have an edge to S2). Because of DFS, the stack will always put 1 vertex from S1 higher than all vertices of S2. So when it explore vertices from the stack in reserved graph, it will explore S1 first, and because the edge is reversed, the edge from S1 to S2 
+    now become S2 to S1. So, the second DFS won't reach S2, that why all vertices reachable by DFS belong to the same component.
+</p>
+<h2>Full code</h2>
+<pre><code class="language-go">package main
+import (
+    "fmt"
+)
+var p = fmt.Println
+
+func main() {
+    // a directed graph implememented using adjacency list
+    graph := map[int][]int {
+        1 : {2},
+        2 : {3},
+        3 : {1,5},
+        4 : {5},
+        5 : {6},
+        6 : {4},
+        7 : {6},
+    }
+
+    SCCs := Kosaraju(graph)
+    p(SCCs)
+}
+
+func Transpose(graph map[int][]int) map[int][]int {
+    reverse_graph := map[int][]int{}
+    for v, l := range graph {
+        for _, vertex := range l {
+            if _, ok := reverse_graph[vertex]; !ok {
+                reverse_graph[vertex] = []int{}
+            }
+            reverse_graph[vertex] = append(reverse_graph[vertex], v)
+        }
+    }
+    return reverse_graph
+}
+
+func Kosaraju(graph map[int][]int) [][]int {
+
+    // pass 1: build the stack
+    stack := []int{}
+    visited := map[int]bool{}
+    for v := range graph {
+        if !visited[v] {
+            helper(v, &stack, visited, graph)
+        }
+    }
+
+    // pass 2: reverse the graph
+    reverse_graph := Transpose(graph)
+    visited = map[int]bool{}
+    SCCs := [][]int{}
+    for len(stack) != 0 {
+        v := stack[0]
+        stack = stack[1:]
+        if !visited[v] {
+            SCC := []int{}
+            helper_2(v, stack, visited, reverse_graph, &SCC)
+            SCCs = append(SCCs, SCC)
+        }
+    }
+
+    return SCCs
+}
+
+// DFS on reverse graph and build SCC
+func helper_2(vertex int, stack []int, visited map[int]bool, reverse_graph map[int][]int, SCC *[]int) {
+    if visited[vertex] {
+        return
+    }
+    visited[vertex] = true
+    for _, v := range reverse_graph[vertex] {
+        helper_2(v, stack, visited, reverse_graph, SCC)
+    }
+    *SCC = append(*SCC, vertex)
+}
+
+// DFS on original graph
+func helper(vertex int, stack *[]int, visited map[int]bool, graph map[int][]int) {
+    if visited[vertex] {
+        return
+    }
+    visited[vertex] = true
+    for _, v := range graph[vertex] {
+        helper(v, stack, visited, graph)
+    }
+    *stack = append([]int{vertex}, (*stack)...)
+}</code></pre>
+<p style="padding-top: 20px;padding-bottom: 17px;">The result:</p>
+<pre><code class="language-go">go run Kosaraju.go
+[[2 3 1] [7] [4 5 6]]</code></pre>
+
+<hr>
+    <h2>References</h2>
+    <ul>
+        <li><a href="https://stackoverflow.com/questions/53680188/kosaraju-s-algorithm-for-scc">Stack Overflow - Kosaraju Algorithm for SCC</a></li>
+        <li><a href="https://www.youtube.com/watch?v=RpgcYiky7uw&t=980s&ab_channel=TusharRoy-CodingMadeSimple">Youtube - Tushar Roy</a></li>
+    </ul>
+    <hr>
+    <div class="footer"></div>
+</div>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>hljs.highlightAll()</script>
+</body>
+</html>
