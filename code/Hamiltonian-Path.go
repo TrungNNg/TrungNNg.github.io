@@ -14,7 +14,7 @@ var p = fmt.Println
 */
 
 func main() {
-    // a un-directed graph implememented using adjacency matrix
+    // a un-directed graph implememented using adjacency list
     graph := [][]int{
         []int{1,3},   // 0
         []int{0,2,4}, // 1
