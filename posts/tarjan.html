@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarjan Algorithm</title>
+    <link rel="stylesheet" href="post.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-light.min.css">
+</head>
+<body>
+<div class="content">
+    <div class="nav"><a href="../blog.html">Back</a></div>
+    <hr>
+    <h1>Find Articulation Points and Bridges using Tarjan Algorithm</h1>
+    <!---<p class="date">Feb 2, 2023</p>-->
+    <p style="padding-top: 20px;">
+        Tarjan algorithm can be used to find articulation points, bridges in an un-directed graph, and strongly connected components in a directed graph. An articulation point is a vertex in graph which removal increase the number of connected components. A bridge is an edge in graph which removal increase the number of connected components. 
+    </p>
+  
+<h2>Construct a graph.</h2>
+<img src="images/graph-tarjan.png" alt="graph">
+<p>Credit <a href="https://csacademy.com/app/graph_editor/">Graph Editor</a></p>
+<pre><code class="language-go">package main
+import (
+    "fmt"
+)
+var p = fmt.Println
+func main() {
+    // a un-directed graph implememented using adjacency list
+    graph := map[int][]int {
+        0 : {1,2},
+        1 : {0,2},
+        2 : {0,1,3},
+        3 : {2,4},
+        4 : {3,5,6},
+        5 : {4,6,7},
+        6 : {4,5},
+        7 : {5},
+    }
+}</code></pre>
+
+<h2>Tarjan Algorithm</h2>
+<p>
+    To find articulation point and bridge, the algorithm need to find back-edges using discovery value and low value. An back-edge is an edge from a child vertex (in context of an DFS tree) that lead to its parent's ancestors. If a child vertex v have an back-edge that mean removing its parent won't disconnect v, hence the parent is not an articulation point. The algorithm use discovery value (the order number of DFS traversal) to know which vertex is parent or child. So, if the low value of a child v is greater or equal to its parent's discovery value, that mean v has an back-edge to its parent or its parent's child, which mean remove the parent will disconnect v, which mean the parent is an articulation point. 
+</p>
+<pre><code class="language-go">func Tarjan(graph map[int][]int) map[int]bool {
+    visited   := map[int]bool{}
+    disc      := map[int]int{}
+    low       := map[int]int{}
+    ans       := map[int]bool{}
+    disc_time := 0
+    // in this example, -1 will represent no parent
+    DFS(3,-1, &disc_time, graph, disc, low, visited, ans)
+
+    // find bridges:
+    // an edge is a bridge if both 2 conditions are true
+    // 1. it connect to an articulation point
+    // 2. the articulation point's child's low is > than the
+    //    articulation point's discover.
+    //    So the child subgraph does not have back-edge to the 
+    //    articulation point or its parent
+    bridges := [][2]int{}
+    for k := range ans {
+        for _, v := range graph[k] {
+            if low[v] > disc[k] {
+                bridges = append(bridges, [2]int{k,v})
+            }
+        }
+    }
+    p("bridges:", bridges)
+    return ans
+}
+
+func DFS(vertex, parent int, disc_time *int, graph map[int][]int, 
+         disc, low map[int]int, visited map[int]bool, 
+         ans map[int]bool) {
+
+    disc[vertex] = *disc_time
+    low[vertex]  = *disc_time
+    *disc_time = *disc_time + 1
+    visited[vertex] = true
+    child_count := 0
+    for _, v := range graph[vertex] {
+        if v == parent { continue }
+
+        if !visited[v] {
+            DFS(v, vertex, disc_time, graph, disc, low, visited, ans)
+            child_count += 1
+        }
+
+        if low[v] < low[vertex] {
+            low[vertex] = low[v]
+        }
+
+        // check if its parent is an articulation point
+        // handle special case for root first
+        if parent == -1 {
+            if child_count >= 2 {
+                ans[vertex] = true
+            }
+        } else if low[v] >= disc[vertex] {
+                ans[vertex] = true
+        }
+    }
+}</code></pre>
+<p style="padding-top: 20px;">Why the root is an articulation point if its child_count is more than 1, what if its children is connected? Remember that the algorithm is doing DFS, so if its children is connected, the DFS tree from root will only result in 1 path, hence 1 child.</p>
+<h2>Find Bridges</h2>
+<p>
+    Not all edges from an articulation point are bridges, but a bridge have to connect to an articulation point. Given an articulation point u and its child v, if low[v] > disc[u] meaning that there is no back-edge from v to u or u's parent, which mean the edge between u and v is the only connection (a bridge)
+</p>
+<h2>Full code</h2>
+<pre><code class="language-go">package main
+import (
+    "fmt"
+)
+var p = fmt.Println
+
+func main() {
+    // a un-directed graph implememented using adjacency list
+    graph := map[int][]int {
+        0 : {1,2},
+        1 : {0,2},
+        2 : {0,1,3},
+        3 : {2,4},
+        4 : {3,5,6},
+        5 : {4,6,7},
+        6 : {4,5},
+        7 : {5},
+    }
+    a_points := Tarjan(graph)
+    fmt.Print("articulation points: ")
+    for k := range a_points {
+        fmt.Print(k, " ")
+    }
+    p()
+}
+
+func Tarjan(graph map[int][]int) map[int]bool {
+    visited   := map[int]bool{}
+    disc      := map[int]int{}
+    low       := map[int]int{}
+    ans       := map[int]bool{}
+    disc_time := 0
+    // in this example, -1 will represent no parent
+    DFS(3,-1, &disc_time, graph, disc, low, visited, ans)
+
+    // to find bridges (edges which removal increase number of connected components)
+    // an edge is a bridge if both 2 conditions are true
+    // 1. it connect to an articulation point
+    // 2. the articulation point's disc is lower than its child's low,
+    //    so the child subgraph does not have back-edge to the articulation point or its parent
+    bridges := [][2]int{}
+    for k := range ans {
+        for _, v := range graph[k] {
+            if  low[v] > disc[k] {
+                bridges = append(bridges, [2]int{k,v})
+            }
+        }
+    }
+    p("bridges:", bridges)
+    return ans
+}
+
+func DFS(vertex, parent int, disc_time *int, graph map[int][]int, 
+         disc, low map[int]int, visited map[int]bool, 
+         ans map[int]bool) {
+
+    disc[vertex] = *disc_time
+    low[vertex]  = *disc_time
+    *disc_time = *disc_time + 1
+    visited[vertex] = true
+    child_count := 0
+    for _, v := range graph[vertex] {
+        if v == parent { continue }
+
+        if !visited[v] {
+            DFS(v, vertex, disc_time, graph, disc, low, visited, ans)
+            child_count += 1
+        }
+
+        if low[v] < low[vertex] {
+            low[vertex] = low[v]
+        }
+
+        // check if its parent is an articulation point
+        // handle special case for root first
+        if parent == -1 {
+            if child_count >= 2 {
+                ans[vertex] = true
+            }
+        } else if low[v] >= disc[vertex] {
+                ans[vertex] = true
+        }
+    }
+}</code></pre>
+<p style="padding-top: 20px;padding-bottom: 17px;">The result:</p>
+<pre><code class="language-go">bridges: [[3 2] [3 4] [5 7]]
+articulation points: 2 5 4 3 </code></pre>
+
+<hr>
+    <h2>References</h2>
+    <ul>
+        <li><a href="https://codeforces.com/blog/entry/71146">CodeForces - Tarjan Algorithm</a></li>
+        <li><a href="https://en.wikipedia.org/wiki/Bridge_(graph_theory)">Wikipedia - Bridge (graph theory)</a></li>
+        <li><a href="https://www.youtube.com/watch?v=2kREIkF9UAs&list=PLLXdhg_r2hKA7DPDsunoDZ-Z769jWn4R8&ab_channel=TusharRoy-CodingMadeSimple">Youtube - Tushar Roy</a></li>
+    </ul>
+    <hr>
+    <div class="footer"></div>
+</div>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>hljs.highlightAll()</script>
+</body>
+</html>

@@ -36,12 +36,12 @@ func Tarjan(graph map[int][]int) map[int]bool {
     // to find bridges (edges which removal increase number of connected components)
     // an edge is a bridge if both 2 conditions are true
     // 1. it connect to an articulation point
-    // 2. the articulation point has lower low than its children
+    // 2. the articulation point's disc is lower than its child's low,
     //    so the child subgraph does not have back-edge to the articulation point or its parent
     bridges := [][2]int{}
     for k := range ans {
         for _, v := range graph[k] {
-            if low[k] < low[v] {
+            if  low[v] > disc[k] {
                 bridges = append(bridges, [2]int{k,v})
             }
         }
