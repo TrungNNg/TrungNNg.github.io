@@ -5,6 +5,7 @@ import (
 var p = fmt.Println
 func main() {
     stree := segment_tree([]int{-1,3,4,0,2,1})
+    p(stree)
     ans := min_range(stree, 2,4, 0, 5, 0)
     p(ans)
    // p(min_range(stree,0,4,0,5,0)) // 0 ?
