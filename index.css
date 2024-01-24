@@ -22,6 +22,15 @@ div.info {
     margin-left: 20px;
 }
 
+div.container {
+    align-items: center; 
+    padding-left: 30px;
+}
+
+div.parent-container {
+    display: flex;
+}
+
 a {
     text-decoration: none;
 }
