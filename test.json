@@ -1,0 +1,122 @@
+[ 
+  {
+    "name": "Two Sum",
+    "link": "https://leetcode.com/problems/two-sum/description/",
+    "difficulty": "Medium",
+    "pattern": "Array & Hashing"
+  },
+  {
+    "name": "Group Anagrams",
+    "link": "https://leetcode.com/problems/group-anagrams/",
+    "difficulty": "Medium",
+    "pattern": "Array & Hashing"
+  },
+  {
+    "name": "Top K Frequent Elements",
+    "link": "https://leetcode.com/problems/top-k-frequent-elements/description/",
+    "difficulty": "Medium",
+    "pattern": "Array & Hashing"
+  },
+  {
+    "name": "Product of Array Except Self",
+    "link": "https://leetcode.com/problems/product-of-array-except-self/description/",
+    "difficulty": "Medium",
+    "pattern": "Array & Hashing"
+  },
+  {
+    "name": "Longest Consecutive Sequence",
+    "link": "https://leetcode.com/problems/longest-consecutive-sequence/description/",
+    "difficulty": "Hard",
+    "pattern": "Array & Hashing"
+  },
+  {
+    "name": "Remove Duplicates from Sorted Array",
+    "link": "https://leetcode.com/problems/remove-duplicates-from-sorted-array/",
+    "difficulty": "Easy",
+    "pattern": "Two Pointers"
+  },
+  {
+    "name": "Squares of a Sorted Array",
+    "link": "https://leetcode.com/problems/squares-of-a-sorted-array/",
+    "difficulty": "Easy",
+    "pattern": "Two Pointers"
+  },
+  {
+    "name": "3Sum",
+    "link": "https://leetcode.com/problems/3sum/",
+    "difficulty": "Medium",
+    "pattern": "Two Pointers"
+  },
+  {
+    "name": "3Sum Closest",
+    "link": "https://leetcode.com/problems/3sum-closest/",
+    "difficulty": "Medium",
+    "pattern": "Two Pointers"
+  },
+  {
+    "name": "3Sum Smaller",
+    "link": "https://leetcode.com/problems/3sum-smaller/",
+    "difficulty": "Medium",
+    "pattern": "Two Pointers"
+  },
+  {
+    "name": "Subarray Product Less Than K",
+    "link": "https://leetcode.com/problems/subarray-product-less-than-k/",
+    "difficulty": "Medium",
+    "pattern": "Two Pointers"
+  },
+  {
+    "name": "Sort Colors",
+    "link": "https://leetcode.com/problems/sort-colors/",
+    "difficulty": "Medium",
+    "pattern": "Two Pointers"
+  },
+  {
+    "name": "4Sum",
+    "link": "https://leetcode.com/problems/4sum/",
+    "difficulty": "Medium",
+    "pattern": "Two Pointers"
+  },
+  {
+    "name": "Backspace String Compare",
+    "link": "https://leetcode.com/problems/backspace-string-compare/",
+    "difficulty": "Medium",
+    "pattern": "Two Pointers"
+  },
+  {
+    "name": "Shortest Unsorted Continuous Subarray",
+    "link": "https://leetcode.com/problems/shortest-unsorted-continuous-subarray/",
+    "difficulty": "Medium",
+    "pattern": "Two Pointers"
+  },
+  {
+    "name": "Minimum Size Subarray Sum",
+    "link": "https://leetcode.com/problems/minimum-size-subarray-sum/",
+    "difficulty": "Medium",
+    "pattern": "Sliding Window"
+  },
+  {
+    "name": "Longest Substring with At Most K Distinct Characters",
+    "link": "https://leetcode.com/problems/longest-substring-with-at-most-k-distinct-characters/",
+    "difficulty": "Hard",
+    "pattern": "Sliding Window"
+  },
+  {
+    "name": "Fruit Into Baskets",
+    "link": "https://leetcode.com/problems/fruit-into-baskets/",
+    "difficulty": "Medium",
+    "pattern": "Sliding Window"
+  },
+  {
+    "name": "Longest Substring Without Repeating Characters",
+    "link": "https://leetcode.com/problems/longest-substring-without-repeating-characters/",
+    "difficulty": "Medium",
+    "pattern": "Sliding Window"
+  },
+  {
+    "name": "Longest Repeating Character Replacement",
+    "link": "https://leetcode.com/problems/longest-repeating-character-replacement/",
+    "difficulty": "Medium",
+    "pattern": "Sliding Window"
+  }
+]
