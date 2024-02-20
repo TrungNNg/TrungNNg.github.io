@@ -306,26 +306,8 @@
     "pattern": "Tree"
   },
   {
-    "name": "Find Median from Data Stream",
-    "link": "https://leetcode.com/problems/find-median-from-data-stream/",
-    "difficulty": "Hard",
-    "pattern": "Trie"
-  },
-  {
-    "name": "Sliding Window Median",
-    "link": "https://leetcode.com/problems/sliding-window-median/",
-    "difficulty": "Hard",
-    "pattern": "Trie"
-  },
-  {
-    "name": "IPO",
-    "link": "https://leetcode.com/problems/ipo/",
-    "difficulty": "Hard",
-    "pattern": "Trie"
-  },
-  {
-    "name": "Find Right Interval",
-    "link": "https://leetcode.com/problems/find-right-interval/",
+    "name": "Implement Trie",
+    "link": "https://leetcode.com/problems/implement-trie-prefix-tree/description/",
     "difficulty": "Medium",
     "pattern": "Trie"
   },
