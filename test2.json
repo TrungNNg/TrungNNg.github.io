@@ -1,0 +1,32 @@
+[
+    {
+        "name": "Two Sum",
+        "link": "https://leetcode.com/problems/two-sum/description/",
+        "difficulty": "Easy",
+        "pattern": "Array & Hashing"
+      },
+      {
+        "name": "Group Anagrams",
+        "link": "https://leetcode.com/problems/group-anagrams/",
+        "difficulty": "Medium",
+        "pattern": "Array & Hashing"
+      },
+      {
+        "name": "Top K Frequent Elements",
+        "link": "https://leetcode.com/problems/top-k-frequent-elements/description/",
+        "difficulty": "Medium",
+        "pattern": "Array & Hashing"
+      },
+      {
+        "name": "Product of Array Except Self",
+        "link": "https://leetcode.com/problems/product-of-array-except-self/description/",
+        "difficulty": "Medium",
+        "pattern": "Array & Hashing"
+      },
+      {
+        "name": "Longest Consecutive Sequence",
+        "link": "https://leetcode.com/problems/longest-consecutive-sequence/description/",
+        "difficulty": "Medium",
+        "pattern": "Array & Hashing"
+      }
+]
