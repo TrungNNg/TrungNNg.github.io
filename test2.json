@@ -28,5 +28,143 @@
         "link": "https://leetcode.com/problems/longest-consecutive-sequence/description/",
         "difficulty": "Medium",
         "pattern": "Array & Hashing"
+      },
+      {
+        "name": "Remove Duplicates from Sorted Array",
+        "link": "https://leetcode.com/problems/remove-duplicates-from-sorted-array/",
+        "difficulty": "Medium",
+        "pattern": "Two Pointers"
+      },
+      {
+        "name": "Squares of a Sorted Array",
+        "link": "https://leetcode.com/problems/squares-of-a-sorted-array/",
+        "difficulty": "Medium",
+        "pattern": "Two Pointers"
+      },
+      {
+        "name": "3Sum",
+        "link": "https://leetcode.com/problems/3sum/",
+        "difficulty": "Medium",
+        "pattern": "Two Pointers"
+      },
+      {
+        "name": "3Sum Closest",
+        "link": "https://leetcode.com/problems/3sum-closest/",
+        "difficulty": "Medium",
+        "pattern": "Two Pointers"
+      },
+      {
+        "name": "3Sum Smaller",
+        "link": "https://leetcode.com/problems/3sum-smaller/",
+        "difficulty": "Medium",
+        "pattern": "Two Pointers"
+      },
+      {
+        "name": "Subarray Product Less Than K",
+        "link": "https://leetcode.com/problems/subarray-product-less-than-k/",
+        "difficulty": "Medium",
+        "pattern": "Two Pointers"
+      },
+      {
+        "name": "Sort Colors",
+        "link": "https://leetcode.com/problems/sort-colors/",
+        "difficulty": "Medium",
+        "pattern": "Two Pointers"
+      },
+      {
+        "name": "4Sum",
+        "link": "https://leetcode.com/problems/4sum/",
+        "difficulty": "Medium",
+        "pattern": "Two Pointers"
+      },
+      {
+        "name": "Backspace String Compare",
+        "link": "https://leetcode.com/problems/backspace-string-compare/",
+        "difficulty": "Medium",
+        "pattern": "Two Pointers"
+      },
+      {
+        "name": "Shortest Unsorted Continuous Subarray",
+        "link": "https://leetcode.com/problems/shortest-unsorted-continuous-subarray/",
+        "difficulty": "Medium",
+        "pattern": "Two Pointers"
+      },
+      {
+        "name": "Minimum Size Subarray Sum",
+        "link": "https://leetcode.com/problems/minimum-size-subarray-sum/",
+        "difficulty": "Medium",
+        "pattern": "Sliding Window"
+      },
+      {
+        "name": "Longest Substring with At Most K Distinct Characters",
+        "link": "https://leetcode.com/problems/longest-substring-with-at-most-k-distinct-characters/",
+        "difficulty": "Medium",
+        "pattern": "Sliding Window"
+      },
+      {
+        "name": "Fruit Into Baskets",
+        "link": "https://leetcode.com/problems/fruit-into-baskets/",
+        "difficulty": "Medium",
+        "pattern": "Sliding Window"
+      },
+      {
+        "name": "Longest Substring Without Repeating Characters",
+        "link": "https://leetcode.com/problems/longest-substring-without-repeating-characters/",
+        "difficulty": "Medium",
+        "pattern": "Sliding Window"
+      },
+      {
+        "name": "Longest Repeating Character Replacement",
+        "link": "https://leetcode.com/problems/longest-repeating-character-replacement/",
+        "difficulty": "Medium",
+        "pattern": "Sliding Window"
+      },
+      {
+        "name": "Max Consecutive Ones III",
+        "link": "https://leetcode.com/problems/max-consecutive-ones-iii/",
+        "difficulty": "Medium",
+        "pattern": "Sliding Window"
+      },
+      {
+        "name": "Permutation in String",
+        "link": "https://leetcode.com/problems/permutation-in-string/",
+        "difficulty": "Medium",
+        "pattern": "Sliding Window"
+      },
+      {
+        "name": "Find All Anagrams in a String",
+        "link": "https://leetcode.com/problems/find-all-anagrams-in-a-string/",
+        "difficulty": "Medium",
+        "pattern": "Sliding Window"
+      },
+      {
+        "name": "Valid Parentheses",
+        "link": "https://leetcode.com/problems/valid-parentheses/description/",
+        "difficulty": "Easy",
+        "pattern": "Stack"
+      },
+      {
+        "name": "Min Stack",
+        "link": "https://leetcode.com/problems/min-stack/",
+        "difficulty": "Easy",
+        "pattern": "Stack"
+      },
+      {
+        "name": "Generate Parentheses",
+        "link": "https://leetcode.com/problems/generate-parentheses/description/",
+        "difficulty": "Medium",
+        "pattern": "Stack"
+      },
+      {
+        "name": "Evaluate Reverse Polish Notation",
+        "link": "https://leetcode.com/problems/evaluate-reverse-polish-notation/description/",
+        "difficulty": "Medium",
+        "pattern": "Stack"
+      },
+      {
+        "name": "Daily Temperatures",
+        "link": "https://leetcode.com/problems/daily-temperatures/description/",
+        "difficulty": "Medium",
+        "pattern": "Stack"
       }
 ]
