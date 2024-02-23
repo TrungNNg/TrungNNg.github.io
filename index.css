@@ -43,3 +43,22 @@ div.footer {
     margin-top: 20px;
     margin-bottom: 150px;
 }
+
+.border {
+    border: 2px solid #333; /* You can change the color and width as needed */
+}
+
+.container-column {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px;
+}
+
+.column {
+    width: 45%;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin: 5px;
+}
